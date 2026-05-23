@@ -76,6 +76,21 @@ async function saveNote() {
   loadNotes();
 }
 
+async function deleteNote(id) {
+  const { error } = await db
+    .from("notes")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    alert(error.message);
+    console.log(error);
+    return;
+  }
+
+  loadNotes();
+}
+
 async function loadNotes() {
   const { data, error } = await db
     .from("notes")
@@ -92,12 +107,17 @@ async function loadNotes() {
 
   data.forEach(note => {
     notesList.innerHTML += `
-      <div class="note">${note.content}</div>
+      <div class="note">
+        ${note.content}
+        <br><br>
+        <button onclick="deleteNote(${note.id})">Delete</button>
+      </div>
     `;
   });
 }
 
 loadNotes();
 </script>
+
 </body>
 </html>
