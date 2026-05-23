@@ -242,7 +242,7 @@ button:disabled {
 <body>
 <div class="page">
   <header>
-    <h1>ChartBox</h1>
+    <h1>📝 Cloud Notes</h1>
     <p class="subtitle">Write, preview, search, edit, and store your notes with image support.</p>
   </header>
 
@@ -530,8 +530,19 @@ async function loadNotes() {
   renderNotes(allNotes);
 }
 
+function startRealtimeSync() {
+  db.channel('notes-realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'notes' }, payload => {
+      if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE' || payload.eventType === 'DELETE') {
+        loadNotes();
+      }
+    })
+    .subscribe();
+}
+
 resetForm();
 loadNotes();
+startRealtimeSync();
 </script>
 </body>
 </html>
