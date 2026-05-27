@@ -275,10 +275,15 @@ button:disabled {
     <textarea id="noteInput" placeholder="Write note..."></textarea>
 
     <div class="file-row">
-      <label for="imageInput">📷 Choose image</label>
-      <button type="button" class="secondary" id="clearImageButton">Clear image</button>
-    </div>
-    <input type="file" id="imageInput" accept="image/*">
+  <label for="imageInput">📎 Choose File</label>
+  <button type="button" class="secondary" id="clearImageButton">Clear File</button>
+</div>
+
+<input
+  type="file"
+  id="imageInput"
+  accept="image/*,.pdf,.doc,.docx,.txt,.ppt,.pptx"
+/>
 
     <div class="preview" id="imagePreview">
       <img alt="Selected preview" id="previewThumb" src="" />
@@ -341,10 +346,24 @@ function updateSaveButtonState() {
 
 function handleImagePreview() {
   const file = imageInput.files[0];
+
   if (!file) {
     imagePreview.style.display = 'none';
     return;
   }
+
+  if (file.type.startsWith('image/')) {
+    previewThumb.src = URL.createObjectURL(file);
+  } else {
+    previewThumb.src =
+      'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+  }
+
+  previewName.textContent = file.name;
+  imagePreview.style.display = 'grid';
+
+  updateSaveButtonState();
+}
 
   const objectUrl = URL.createObjectURL(file);
   previewThumb.src = objectUrl;
@@ -373,13 +392,60 @@ function resetForm() {
 async function saveNote() {
   const text = noteInput.value.trim();
   const file = imageInput.files[0];
-  let imageUrl = '';
+
+  let fileUrl = "";
 
   if (!text && !file) {
-    alert('Please add text or select an image.');
+    alert("Please add note or file");
     return;
   }
 
+  if (file) {
+    const fileName =
+      Date.now() + "-" + file.name.replace(/\s+/g, "-");
+
+    const { data, error } = await db.storage
+      .from("note-images")
+      .upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: true
+      });
+
+    if (error) {
+      console.log(error);
+      alert(error.message);
+      return;
+    }
+
+    const { data: publicUrlData } = db.storage
+      .from("note-images")
+      .getPublicUrl(fileName);
+
+    fileUrl = publicUrlData.publicUrl;
+  }
+
+  const { error } = await db
+    .from("notes")
+    .insert([
+      {
+        content: text,
+        image_url: fileUrl || null
+      }
+    ]);
+
+  if (error) {
+    console.log(error);
+    alert(error.message);
+    return;
+  }
+
+  noteInput.value = "";
+  imageInput.value = "";
+
+  clearImageSelection();
+
+  await loadNotes();
+}
   if (file) {
     const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
     const { error: uploadError } = await db.storage
@@ -495,11 +561,53 @@ function renderNotes(notes) {
     noteElement.appendChild(contentParagraph);
 
     if (note.image_url) {
-      const imageElement = document.createElement('img');
-      imageElement.src = note.image_url;
-      imageElement.alt = 'Note image';
-      noteElement.appendChild(imageElement);
-    }
+
+  if (
+    note.image_url.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+  ) {
+    const imageElement = document.createElement('img');
+    imageElement.src = note.image_url;
+    noteElement.appendChild(imageElement);
+  }
+
+  else if (
+    note.image_url.toLowerCase().includes('.pdf')
+  ) {
+    noteElement.innerHTML += `
+      <a
+        href="${note.image_url}"
+        target="_blank"
+        style="
+          display:block;
+          margin-top:14px;
+          font-size:18px;
+          font-weight:600;
+          color:#2563eb;
+        "
+      >
+        📄 Open PDF
+      </a>
+    `;
+  }
+
+  else {
+    noteElement.innerHTML += `
+      <a
+        href="${note.image_url}"
+        target="_blank"
+        style="
+          display:block;
+          margin-top:14px;
+          font-size:18px;
+          font-weight:600;
+          color:#2563eb;
+        "
+      >
+        📎 Download File
+      </a>
+    `;
+  }
+}
 
     const metaRow = document.createElement('div');
     metaRow.className = 'note-meta';
