@@ -304,290 +304,128 @@ button:disabled {
 
 <script>
 const SUPABASE_URL = "https://kuengnoohosovnnibqlb.supabase.co";
-const SUPABASE_KEY = "sb_publishable_y4XzOOhE84fof3YZK4qz-w_KSCMXLlz";
+const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const noteInput = document.getElementById('noteInput');
-const imageInput = document.getElementById('imageInput');
-const imagePreview = document.getElementById('imagePreview');
-const previewThumb = document.getElementById('previewThumb');
-const previewName = document.getElementById('previewName');
-const notesList = document.getElementById('notesList');
-const noteCount = document.getElementById('noteCount');
-const searchInput = document.getElementById('searchInput');
-const saveButton = document.getElementById('saveButton');
-const message = document.getElementById('message');
-const clearImageButton = document.getElementById('clearImageButton');
-
-let editingNoteId = null;
-let allNotes = [];
-
-imageInput.addEventListener('change', handleImagePreview);
-searchInput.addEventListener('input', () => renderNotes(allNotes));
-clearImageButton.addEventListener('click', clearImageSelection);
-noteInput.addEventListener('input', updateSaveButtonState);
-
-function showMessage(text, timeout = 2500) {
-  message.textContent = text;
-  if (timeout > 0) {
-    setTimeout(() => {
-      if (message.textContent === text) message.textContent = '';
-    }, timeout);
-  }
-}
-
-function updateSaveButtonState() {
-  const hasText = noteInput.value.trim().length > 0;
-  const hasImage = imageInput.files.length > 0;
-  saveButton.disabled = !hasText && !hasImage;
-}
-
-function handleImagePreview() {
-  const file = imageInput.files[0];
-
-  if (!file) {
-    imagePreview.style.display = 'none';
-    return;
-  }
-
-  if (file.type.startsWith('image/')) {
-    previewThumb.src = URL.createObjectURL(file);
-  } else {
-    previewThumb.src =
-      'https://cdn-icons-png.flaticon.com/512/337/337946.png';
-  }
-
-  previewName.textContent = file.name;
-  imagePreview.style.display = 'grid';
-
-  updateSaveButtonState();
-}
-
-  const objectUrl = URL.createObjectURL(file);
-  previewThumb.src = objectUrl;
-  previewName.textContent = file.name;
-  imagePreview.style.display = 'grid';
-  updateSaveButtonState();
-}
-
-function clearImageSelection() {
-  imageInput.value = '';
-  imagePreview.style.display = 'none';
-  previewThumb.src = '';
-  previewName.textContent = '';
-  updateSaveButtonState();
-}
-
-function resetForm() {
-  editingNoteId = null;
-  noteInput.value = '';
-  clearImageSelection();
-  saveButton.textContent = 'Save Note';
-  showMessage('Ready for a new note');
-  updateSaveButtonState();
-}
+const noteInput = document.getElementById("noteInput");
+const imageInput = document.getElementById("imageInput");
+const notesList = document.getElementById("notesList");
 
 async function saveNote() {
   const text = noteInput.value.trim();
+  const file = imageInput.files[0];
 
-  if (!text) {
-    alert("Write a note first");
+  let fileUrl = null;
+
+  if (!text && !file) {
+    alert("Write note or choose file");
     return;
   }
 
-  const { data, error } = await db
+  if (file) {
+    const fileName = Date.now() + "-" + file.name;
+
+    const { error: uploadError } = await db.storage
+      .from("note-images")
+      .upload(fileName, file);
+
+    if (uploadError) {
+      alert(uploadError.message);
+      console.log(uploadError);
+      return;
+    }
+
+    const { data } = db.storage
+      .from("note-images")
+      .getPublicUrl(fileName);
+
+    fileUrl = data.publicUrl;
+  }
+
+  const { error } = await db
     .from("notes")
     .insert([
       {
-        content: text
+        content: text,
+        image_url: fileUrl
       }
     ]);
 
   if (error) {
-    console.log("INSERT ERROR:", error);
     alert(error.message);
+    console.log(error);
     return;
   }
 
   noteInput.value = "";
-  showMessage("Note saved");
+  imageInput.value = "";
+
   loadNotes();
 }
+
 async function deleteNote(id) {
-  const confirmed = confirm('Delete this note permanently?');
-  if (!confirmed) return;
-
-  const { error } = await db
-    .from('notes')
+  await db
+    .from("notes")
     .delete()
-    .eq('id', id);
+    .eq("id", id);
 
-  if (error) {
-    console.error('Delete error:', error);
-    alert('Unable to delete note.');
-    return;
-  }
-
-  showMessage('Note deleted');
-  await loadNotes();
-}
-
-function editNote(note) {
-  editingNoteId = note.id;
-  noteInput.value = note.content || '';
-  saveButton.textContent = 'Update Note';
-
-  if (note.image_url) {
-    previewThumb.src = note.image_url;
-    previewName.textContent = note.image_url.split('/').pop();
-    imagePreview.style.display = 'grid';
-  } else {
-    clearImageSelection();
-  }
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  updateSaveButtonState();
-}
-
-function formatDate(value) {
-  if (!value) return '';
-  const date = new Date(value);
-  return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-}
-
-function renderNotes(notes) {
-  const query = searchInput.value.trim().toLowerCase();
-  const visibleNotes = notes.filter(note => {
-    if (!query) return true;
-    return (note.content || '').toLowerCase().includes(query);
-  });
-
-  noteCount.textContent = `${visibleNotes.length} note${visibleNotes.length === 1 ? '' : 's'}`;
-  notesList.innerHTML = '';
-
-  if (visibleNotes.length === 0) {
-    notesList.innerHTML = '<div class="note"><p>No notes found. Add one above to get started.</p></div>';
-    return;
-  }
-
-  visibleNotes.forEach(note => {
-    const noteElement = document.createElement('article');
-    noteElement.className = 'note';
-
-    const contentParagraph = document.createElement('p');
-    contentParagraph.textContent = note.content || 'No text provided';
-    noteElement.appendChild(contentParagraph);
-
-    if (note.image_url) {
-
-  if (
-    note.image_url.match(/\.(jpg|jpeg|png|gif|webp)$/i)
-  ) {
-    const imageElement = document.createElement('img');
-    imageElement.src = note.image_url;
-    noteElement.appendChild(imageElement);
-  }
-
-  else if (
-    note.image_url.toLowerCase().includes('.pdf')
-  ) {
-    noteElement.innerHTML += `
-      <a
-        href="${note.image_url}"
-        target="_blank"
-        style="
-          display:block;
-          margin-top:14px;
-          font-size:18px;
-          font-weight:600;
-          color:#2563eb;
-        "
-      >
-        📄 Open PDF
-      </a>
-    `;
-  }
-
-  else {
-    noteElement.innerHTML += `
-      <a
-        href="${note.image_url}"
-        target="_blank"
-        style="
-          display:block;
-          margin-top:14px;
-          font-size:18px;
-          font-weight:600;
-          color:#2563eb;
-        "
-      >
-        📎 Download File
-      </a>
-    `;
-  }
-}
-
-    const metaRow = document.createElement('div');
-    metaRow.className = 'note-meta';
-    metaRow.innerHTML = `
-      <span>${formatDate(note.created_at)}</span>
-      <span>#${note.id}</span>
-    `;
-    noteElement.appendChild(metaRow);
-
-    const actionsRow = document.createElement('div');
-    actionsRow.className = 'card-actions';
-
-    const editButton = document.createElement('button');
-    editButton.type = 'button';
-    editButton.className = 'secondary';
-    editButton.textContent = 'Edit';
-    editButton.addEventListener('click', () => editNote(note));
-
-    const deleteButton = document.createElement('button');
-    deleteButton.type = 'button';
-    deleteButton.className = 'primary';
-    deleteButton.textContent = 'Delete';
-    deleteButton.addEventListener('click', () => deleteNote(note.id));
-
-    actionsRow.appendChild(editButton);
-    actionsRow.appendChild(deleteButton);
-    noteElement.appendChild(actionsRow);
-
-    notesList.appendChild(noteElement);
-  });
+  loadNotes();
 }
 
 async function loadNotes() {
   const { data, error } = await db
-    .from('notes')
-    .select('*')
-    .order('created_at', { ascending: false });
+    .from("notes")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error(error);
+    console.log(error);
     return;
   }
 
-  allNotes = data || [];
-  renderNotes(allNotes);
-}
+  notesList.innerHTML = "";
 
-function startRealtimeSync() {
-  db.channel('notes-realtime')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'notes' }, payload => {
-      if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE' || payload.eventType === 'DELETE') {
-        loadNotes();
+  data.forEach(note => {
+    let fileHtml = "";
+
+    if (note.image_url) {
+      if (
+        note.image_url.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+      ) {
+        fileHtml =
+          `<img src="${note.image_url}"
+            style="width:100%;margin-top:12px;border-radius:12px;">`;
+      } else if (
+        note.image_url.includes(".pdf")
+      ) {
+        fileHtml =
+          `<a href="${note.image_url}" target="_blank">
+            📄 Open PDF
+          </a>`;
+      } else {
+        fileHtml =
+          `<a href="${note.image_url}" target="_blank">
+            📎 Download File
+          </a>`;
       }
-    })
-    .subscribe();
+    }
+
+    notesList.innerHTML += `
+      <div class="note">
+        <p>${note.content || ""}</p>
+        ${fileHtml}
+        <br><br>
+        <button onclick="deleteNote(${note.id})">
+          Delete
+        </button>
+      </div>
+    `;
+  });
 }
 
-resetForm();
 loadNotes();
-startRealtimeSync();
 </script>
 </body>
 </html>
