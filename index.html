@@ -304,36 +304,98 @@ button:disabled {
 
 <script>
 const SUPABASE_URL = "https://kuengnoohosovnnibqlb.supabase.co";
-const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_KEY = "sb_publishable_y4XzOOhE84fof3YZK4qz-w_KSCMXLlz";
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// DOM Elements
 const noteInput = document.getElementById("noteInput");
 const imageInput = document.getElementById("imageInput");
 const notesList = document.getElementById("notesList");
+const searchInput = document.getElementById("searchInput");
+const noteCount = document.getElementById("noteCount");
+const clearImageButton = document.getElementById("clearImageButton");
+const imagePreview = document.getElementById("imagePreview");
+const previewThumb = document.getElementById("previewThumb");
+const previewName = document.getElementById("previewName");
+
+// --- UI Interaction Logic ---
+
+// Show preview when file is selected
+imageInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    imagePreview.style.display = "flex";
+    previewName.textContent = file.name;
+
+    if (file.type.startsWith("image/")) {
+      previewThumb.src = URL.createObjectURL(file);
+      previewThumb.style.display = "block";
+    } else {
+      previewThumb.style.display = "none";
+    }
+  } else {
+    resetPreview();
+  }
+});
+
+// Clear file button logic
+clearImageButton.addEventListener("click", () => {
+  imageInput.value = "";
+  resetPreview();
+});
+
+function resetPreview() {
+  imagePreview.style.display = "none";
+  previewName.textContent = "";
+  previewThumb.src = "";
+}
+
+// Missing resetForm function fixed here
+function resetForm() {
+  noteInput.value = "";
+  imageInput.value = "";
+  resetPreview();
+}
+
+// Search functionality
+searchInput.addEventListener("input", (e) => {
+  const searchTerm = e.target.value.toLowerCase();
+  const notes = document.querySelectorAll(".note");
+  
+  notes.forEach(note => {
+    const text = note.querySelector("p").textContent.toLowerCase();
+    if (text.includes(searchTerm)) {
+      note.style.display = "block";
+    } else {
+      note.style.display = "none";
+    }
+  });
+});
+
+// --- Supabase Logic ---
 
 async function saveNote() {
   const text = noteInput.value.trim();
   const file = imageInput.files[0];
-
   let fileUrl = null;
 
   if (!text && !file) {
-    alert("Write note or choose file");
+    alert("Write a note or choose a file.");
     return;
   }
 
+  // Handle file upload
   if (file) {
-    const fileName = Date.now() + "-" + file.name;
-
+    const fileName = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9.\-]/g, '_'); // Sanitized filename
     const { error: uploadError } = await db.storage
       .from("note-images")
       .upload(fileName, file);
 
     if (uploadError) {
-      alert(uploadError.message);
-      console.log(uploadError);
+      alert("Upload failed: " + uploadError.message);
+      console.error(uploadError);
       return;
     }
 
@@ -344,6 +406,7 @@ async function saveNote() {
     fileUrl = data.publicUrl;
   }
 
+  // Save to database
   const { error } = await db
     .from("notes")
     .insert([
@@ -354,23 +417,25 @@ async function saveNote() {
     ]);
 
   if (error) {
-    alert(error.message);
-    console.log(error);
+    alert("Database error: " + error.message);
+    console.error(error);
     return;
   }
 
-  noteInput.value = "";
-  imageInput.value = "";
-
-  loadNotes();
+  resetForm(); // Clean up the UI
+  loadNotes(); // Refresh list
 }
 
 async function deleteNote(id) {
-  await db
+  const { error } = await db
     .from("notes")
     .delete()
     .eq("id", id);
 
+  if (error) {
+    alert("Could not delete: " + error.message);
+    return;
+  }
   loadNotes();
 }
 
@@ -381,34 +446,24 @@ async function loadNotes() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.log(error);
+    console.error("Error loading notes:", error);
     return;
   }
 
   notesList.innerHTML = "";
+  noteCount.textContent = `${data.length} notes`; // Update stats counter
 
   data.forEach(note => {
     let fileHtml = "";
 
     if (note.image_url) {
-      if (
-        note.image_url.match(/\.(jpg|jpeg|png|gif|webp)$/i)
-      ) {
-        fileHtml =
-          `<img src="${note.image_url}"
-            style="width:100%;margin-top:12px;border-radius:12px;">`;
-      } else if (
-        note.image_url.includes(".pdf")
-      ) {
-        fileHtml =
-          `<a href="${note.image_url}" target="_blank">
-            📄 Open PDF
-          </a>`;
+      // Improved matching for image types and query parameters
+      if (note.image_url.match(/\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i)) {
+        fileHtml = `<img src="${note.image_url}" alt="Note image" style="width:100%;margin-top:12px;border-radius:12px;">`;
+      } else if (note.image_url.toLowerCase().includes(".pdf")) {
+        fileHtml = `<a href="${note.image_url}" target="_blank" style="display:inline-block;margin-top:10px;">📄 Open PDF</a>`;
       } else {
-        fileHtml =
-          `<a href="${note.image_url}" target="_blank">
-            📎 Download File
-          </a>`;
+        fileHtml = `<a href="${note.image_url}" target="_blank" style="display:inline-block;margin-top:10px;">📎 Download File</a>`;
       }
     }
 
@@ -416,15 +471,15 @@ async function loadNotes() {
       <div class="note">
         <p>${note.content || ""}</p>
         ${fileHtml}
-        <br><br>
-        <button onclick="deleteNote(${note.id})">
-          Delete
-        </button>
+        <div class="card-actions">
+          <button class="secondary" onclick="deleteNote(${note.id})">Delete</button>
+        </div>
       </div>
     `;
   });
 }
 
+// Initial load
 loadNotes();
 </script>
 </body>
