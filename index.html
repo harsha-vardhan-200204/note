@@ -15,69 +15,21 @@
   <!-- Marked Markdown Parser CDN -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    body{
-  background: linear-gradient(135deg,#eef4ff,#dbeafe);
-}
-    button.primary{
-  background: linear-gradient(135deg,#003b7a,#0056b3);
-}
-
-button.primary:hover{
-  background: linear-gradient(135deg,#002d5a,#004a99);
-}
-    .pes-header{
-  background: linear-gradient(135deg,#003b7a,#0056b3);
-  padding:20px 30px;
-  border-radius:18px;
-  margin-bottom:25px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  box-shadow:0 8px 30px rgba(0,0,0,.15);
-}
-
-.pes-brand{
-  display:flex;
-  align-items:center;
-  gap:18px;
-}
-
-.pes-logo{
-  width:72px;
-  height:72px;
-  object-fit:contain;
-  background:white;
-  border-radius:14px;
-  padding:6px;
-}
-
-.pes-header h1{
-  color:white;
-  font-size:38px;
-  margin:0;
-  font-weight:700;
-}
-
-.pes-header .subtitle{
-  color:#dbeafe;
-  font-size:17px;
-  margin-top:6px;
-}
     /* CSS RESET & MODERN DESIGN TOKENS */
     :root {
-      /* Dark Theme variables by default */
-      --bg: #0b0f19;
-      --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #05070c 100%);
-      --card-bg: rgba(20, 26, 42, 0.65);
+      /* Dark Theme variables by default (PES Blue-accented) */
+      --bg: #071126;
+      --bg-gradient: linear-gradient(135deg, #071126 0%, #030814 100%);
+      --card-bg: rgba(13, 27, 54, 0.65);
       --card-border: rgba(255, 255, 255, 0.08);
-      --card-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+      --card-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
       --text-primary: #f3f4f6;
-      --text-muted: #9ca3af;
-      --primary: #6366f1; /* Premium Indigo */
-      --primary-hover: #4f46e5;
-      --primary-glow: rgba(99, 102, 241, 0.25);
-      --accent: #ec4899; /* Pink */
-      --accent-glow: rgba(236, 72, 153, 0.2);
+      --text-muted: #94a3b8;
+      --primary: #0077f2; /* Premium PES Blue in dark mode */
+      --primary-hover: #0056b3;
+      --primary-glow: rgba(0, 119, 242, 0.25);
+      --accent: #f59e0b; /* Gold/Amber */
+      --accent-glow: rgba(245, 158, 11, 0.2);
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
@@ -87,18 +39,18 @@ button.primary:hover{
       --border-radius-sm: 10px;
     }
     [data-theme="light"] {
-      --bg: #f8fafc;
-      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      --bg: #eef4ff;
+      --bg-gradient: linear-gradient(135deg, #eef4ff 0%, #dbeafe 100%);
       --card-bg: rgba(255, 255, 255, 0.75);
-      --card-border: rgba(15, 23, 42, 0.08);
-      --card-shadow: 0 16px 36px rgba(15, 23, 42, 0.06);
-      --text-primary: #0f172a;
-      --text-muted: #64748b;
-      --primary: #3b82f6; /* Modern Blue */
-      --primary-hover: #2563eb;
-      --primary-glow: rgba(59, 130, 246, 0.2);
-      --accent: #8b5cf6; /* Violet */
-      --accent-glow: rgba(139, 92, 246, 0.15);
+      --card-border: rgba(0, 59, 122, 0.08);
+      --card-shadow: 0 16px 36px rgba(0, 59, 122, 0.06);
+      --text-primary: #00224b; /* Deep PES Navy */
+      --text-muted: #4b6b94;
+      --primary: #0056b3; /* PES Blue */
+      --primary-hover: #003b7a;
+      --primary-glow: rgba(0, 86, 179, 0.2);
+      --accent: #d97706; /* Gold/Amber */
+      --accent-glow: rgba(217, 119, 6, 0.15);
     }
     * {
       box-sizing: border-box;
@@ -155,8 +107,72 @@ button.primary:hover{
     @keyframes float {
       0% { transform: translate(0, 0) scale(1); }
       100% { transform: translate(60px, 40px) scale(1.1); }
+    }    /* PES UNIVERSITY HEADER STYLING */
+    .pes-header {
+      background: linear-gradient(135deg, #003b7a, #0056b3);
+      padding: 20px 30px;
+      border-radius: 18px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
     }
-    /* HEADER */
+    
+    [data-theme="dark"] .pes-header {
+      background: linear-gradient(135deg, #031530 0%, #002d5a 100%);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+    .pes-brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .pes-logo {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      background: white;
+      border-radius: 14px;
+      padding: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 59, 122, 0.1);
+    }
+    .pes-header h1 {
+      color: white;
+      font-size: 2.2rem;
+      margin: 0;
+      font-weight: 700;
+      background: none;
+      -webkit-text-fill-color: initial;
+      -webkit-background-clip: initial;
+      letter-spacing: -0.5px;
+      font-family: 'Outfit', sans-serif;
+    }
+    .pes-header .subtitle {
+      color: #dbeafe;
+      font-size: 0.95rem;
+      margin-top: 4px;
+      font-family: 'Inter', sans-serif;
+    }
+    /* Fallback styles if the logo image is missing */
+    .pes-logo-fallback {
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    /* DEFAULT HEADER (Compatibility fallback) */
     header {
       display: flex;
       justify-content: space-between;
@@ -580,13 +596,14 @@ button.primary:hover{
     }
     
     button.primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
       color: white;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+      box-shadow: 0 4px 15px var(--primary-glow);
     }
     button.primary:hover {
+      background: linear-gradient(135deg, var(--primary-hover) 0%, #001f4d 100%);
       transform: translateY(-1.5px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+      box-shadow: 0 6px 20px var(--primary-glow);
       opacity: 0.95;
     }
     button.primary:active {
@@ -1094,30 +1111,26 @@ button.primary:hover{
   </style>
 </head>
 <body>
-  
   <!-- Ambient background graphics -->
   <div class="bg-orbs">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
   </div>
   <div class="page">
-    <!-- Header Area -->
     <header class="pes-header">
-  <div class="pes-brand">
-    <img src="PES logo.jpeg" alt="PES University Logo" class="pes-logo">
-
-    <div>
-      <h1>ChartBox</h1>
-      <p class="subtitle">
-        PES University Notes Portal • Store Notes • PDFs • Assignments
-      </p>
-    </div>
-  </div>
-
-  <button class="theme-toggle-btn" id="themeToggleBtn">
-    <i data-lucide="moon"></i>
-  </button>
-</header>
+      <div class="pes-brand">
+        <img src="PES logo.jpeg" alt="PES University Logo" class="pes-logo" id="pesLogoImg" onerror="handleLogoError()">
+        <div id="pesLogoFallback" class="pes-logo-fallback" style="display: none;">PES</div>
+        <div>
+          <h1>ChartBox</h1>
+          <p class="subtitle">PES University Notes Portal • Store Notes • PDFs • Assignments</p>
+        </div>
+      </div>
+      <button class="theme-toggle-btn" id="themeToggleBtn" title="Switch Theme">
+        <i data-lucide="sun" class="sun-icon" style="display:none;" width="20" height="20"></i>
+        <i data-lucide="moon" class="moon-icon" width="20" height="20"></i>
+      </button>
+    </header>
     <!-- Animated Dashboard Stats Widget -->
     <section class="dashboard-stats" id="statsDashboard">
       <div class="stat-widget">
@@ -1244,6 +1257,13 @@ button.primary:hover{
     </div>
   </div>
   <script>
+    // PES University Logo Error Fallback Handler
+    function handleLogoError() {
+      const img = document.getElementById("pesLogoImg");
+      const fallback = document.getElementById("pesLogoFallback");
+      if (img) img.style.display = "none";
+      if (fallback) fallback.style.display = "flex";
+    }
     // Supabase Credentials (Maintained as requested)
     const SUPABASE_URL = "https://kuengnoohosovnnibqlb.supabase.co";
     const SUPABASE_KEY = "sb_publishable_y4XzOOhE84fof3YZK4qz-w_KSCMXLlz";
@@ -1330,12 +1350,21 @@ button.primary:hover{
     function setTheme(theme) {
       document.documentElement.setAttribute("data-theme", theme);
       localStorage.setItem("chartbox_theme", theme);
-      if (theme === "light") {
-        sunIcon.style.display = "none";
-        moonIcon.style.display = "block";
+      if (sunIcon && moonIcon) {
+        if (theme === "light") {
+          sunIcon.style.display = "none";
+          moonIcon.style.display = "block";
+        } else {
+          sunIcon.style.display = "block";
+          moonIcon.style.display = "none";
+        }
       } else {
-        sunIcon.style.display = "block";
-        moonIcon.style.display = "none";
+        // Fallback for custom simplified theme buttons
+        const iconEl = themeToggleBtn.querySelector("i");
+        if (iconEl) {
+          iconEl.setAttribute("data-lucide", theme === "light" ? "moon" : "sun");
+          if (window.lucide) window.lucide.createIcons();
+        }
       }
     }
     themeToggleBtn.addEventListener("click", () => {
@@ -1374,42 +1403,42 @@ button.primary:hover{
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
     function handleFileSelection(file) {
-  if (!file) return;
-
-  // 100MB limit
-  if (file.size > 100 * 1024 * 1024) {
-    showToast("File size too large. Limit is 100MB.", "warning");
-    imageInput.value = "";
-    resetPreview();
-    return;
-  }
-
-  imagePreview.style.display = "flex";
-  previewName.textContent = file.name;
-  previewSize.textContent = formatBytes(file.size);
-
-  if (file.type.startsWith("image/")) {
-    previewThumb.src = URL.createObjectURL(file);
-    previewThumb.style.display = "block";
-    previewIconBadge.style.display = "none";
-  } else {
-    previewThumb.style.display = "none";
-    previewIconBadge.style.display = "flex";
-
-    let iconName = "file-text";
-
-    if (file.name.match(/\.pdf$/i)) iconName = "file";
-    if (file.name.match(/\.(doc|docx)$/i)) iconName = "file-text";
-    if (file.name.match(/\.(ppt|pptx)$/i)) iconName = "presentation";
-    if (file.name.match(/\.(zip|rar)$/i)) iconName = "archive";
-
-    previewIconBadge.innerHTML =
-      `<i data-lucide="${iconName}" width="24" height="24"></i>`;
-
-    lucide.createIcons();
-  }
-}
-
+      if (!file) return;
+      
+      // Safety limit of 15MB
+      if (file.size > 15 * 1024 * 1024) {
+        showToast("File size too large. Limit is 15MB.", "warning");
+        imageInput.value = "";
+        resetPreview();
+        return;
+      }
+      imagePreview.style.display = "flex";
+      previewName.textContent = file.name;
+      previewSize.textContent = formatBytes(file.size);
+      if (file.type.startsWith("image/")) {
+        previewThumb.src = URL.createObjectURL(file);
+        previewThumb.style.display = "block";
+        previewIconBadge.style.display = "none";
+      } else {
+        previewThumb.style.display = "none";
+        previewIconBadge.style.display = "flex";
+        // Render appropriate file type icon class
+        let iconName = "file-text";
+        if (file.name.endsWith(".pdf")) iconName = "file-spreadsheet"; // Lucide icon names
+        if (file.name.match(/\.(doc|docx)$/i)) iconName = "file-text";
+        if (file.name.match(/\.(ppt|pptx)$/i)) iconName = "presentation";
+        
+        previewIconBadge.innerHTML = `<i data-lucide="${iconName}"></i>`;
+        lucide.createIcons();
+      }
+    }
+    // Clear file selection
+    clearImageButton.addEventListener("click", () => {
+      imageInput.value = "";
+      editingFileUrl = null; // Clear edit URL trace if user actively clears file
+      resetPreview();
+      showToast("Attachment cleared.", "info");
+    });
     function resetPreview() {
       imagePreview.style.display = "none";
       previewName.textContent = "";
@@ -1453,8 +1482,6 @@ button.primary:hover{
       layoutGridBtn.classList.remove("active");
       notesList.className = "notes-grid list-view";
     });
-
-
     // --- Supabase CRUD Integration ---
     // Save or Update note
     async function saveNote() {
