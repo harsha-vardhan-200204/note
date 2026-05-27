@@ -391,110 +391,30 @@ function resetForm() {
 
 async function saveNote() {
   const text = noteInput.value.trim();
-  const file = imageInput.files[0];
 
-  let fileUrl = "";
-
-  if (!text && !file) {
-    alert("Please add note or file");
+  if (!text) {
+    alert("Write a note first");
     return;
   }
 
-  if (file) {
-    const fileName =
-      Date.now() + "-" + file.name.replace(/\s+/g, "-");
-
-    const { data, error } = await db.storage
-      .from("note-images")
-      .upload(fileName, file, {
-        cacheControl: "3600",
-        upsert: true
-      });
-
-    if (error) {
-      console.log(error);
-      alert(error.message);
-      return;
-    }
-
-    const { data: publicUrlData } = db.storage
-      .from("note-images")
-      .getPublicUrl(fileName);
-
-    fileUrl = publicUrlData.publicUrl;
-  }
-
-  const { error } = await db
+  const { data, error } = await db
     .from("notes")
     .insert([
       {
-        content: text,
-        image_url: fileUrl || null
+        content: text
       }
     ]);
 
   if (error) {
-    console.log(error);
+    console.log("INSERT ERROR:", error);
     alert(error.message);
     return;
   }
 
   noteInput.value = "";
-  imageInput.value = "";
-
-  clearImageSelection();
-
-  await loadNotes();
+  showMessage("Note saved");
+  loadNotes();
 }
-  if (file) {
-    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    const { error: uploadError } = await db.storage
-      .from('note-images')
-      .upload(fileName, file);
-
-    if (uploadError) {
-      console.error('Upload error:', uploadError);
-      alert('Image upload failed. Please try again.');
-      return;
-    }
-
-    imageUrl = `${SUPABASE_URL}/storage/v1/object/public/note-images/${encodeURIComponent(fileName)}`;
-  }
-
-  if (editingNoteId) {
-    const { error } = await db
-      .from('notes')
-      .update({
-        content: text,
-        image_url: imageUrl || null
-      })
-      .eq('id', editingNoteId);
-
-    if (error) {
-      console.error('Update error:', error);
-      alert('Unable to update note.');
-      return;
-    }
-
-    showMessage('Note updated');
-  } else {
-    const { error } = await db
-      .from('notes')
-      .insert([{ content: text, image_url: imageUrl }]);
-
-    if (error) {
-      console.error('Insert error:', error);
-      alert('Unable to save note.');
-      return;
-    }
-
-    showMessage('Note saved');
-  }
-
-  resetForm();
-  await loadNotes();
-}
-
 async function deleteNote(id) {
   const confirmed = confirm('Delete this note permanently?');
   if (!confirmed) return;
