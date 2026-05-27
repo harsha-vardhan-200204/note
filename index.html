@@ -2,22 +2,19 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>ChartBox — Interactive Digital Notes</title>
-  <!-- Google Fonts: Outfit for headers, Inter for UI -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Supabase CDN -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChartBox - Interactive Digital Notes</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Marked Markdown Parser CDN -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
   <style>
-    /* CSS RESET & MODERN DESIGN TOKENS */
     :root {
-      /* Dark Theme variables by default (PES Blue-accented) */
       --bg: #071126;
       --bg-gradient: linear-gradient(135deg, #071126 0%, #030814 100%);
       --card-bg: rgba(13, 27, 54, 0.65);
@@ -25,62 +22,135 @@
       --card-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
       --text-primary: #f3f4f6;
       --text-muted: #94a3b8;
-      --primary: #0077f2; /* Premium PES Blue in dark mode */
+      --primary: #0077f2;
       --primary-hover: #0056b3;
       --primary-glow: rgba(0, 119, 242, 0.25);
-      --accent: #f59e0b; /* Gold/Amber */
-      --accent-glow: rgba(245, 158, 11, 0.2);
+      --accent: #f59e0b;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --transition-speed: 0.3s;
       --border-radius-lg: 24px;
       --border-radius-md: 16px;
       --border-radius-sm: 10px;
     }
+
     [data-theme="light"] {
       --bg: #eef4ff;
       --bg-gradient: linear-gradient(135deg, #eef4ff 0%, #dbeafe 100%);
-      --card-bg: rgba(255, 255, 255, 0.75);
-      --card-border: rgba(0, 59, 122, 0.08);
-      --card-shadow: 0 16px 36px rgba(0, 59, 122, 0.06);
-      --text-primary: #00224b; /* Deep PES Navy */
+      --card-bg: rgba(255, 255, 255, 0.78);
+      --card-border: rgba(0, 59, 122, 0.1);
+      --card-shadow: 0 16px 36px rgba(0, 59, 122, 0.08);
+      --text-primary: #00224b;
       --text-muted: #4b6b94;
-      --primary: #0056b3; /* PES Blue */
+      --primary: #0056b3;
       --primary-hover: #003b7a;
       --primary-glow: rgba(0, 86, 179, 0.2);
-      --accent: #d97706; /* Gold/Amber */
-      --accent-glow: rgba(217, 119, 6, 0.15);
+      --accent: #d97706;
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
     body {
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-primary);
       min-height: 100vh;
       padding: 30px 20px;
-      transition: background var(--transition-speed), color var(--transition-speed);
       overflow-x: hidden;
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      transition: background 0.3s ease, color 0.3s ease;
     }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      outline: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
     .page {
       max-width: 900px;
       margin: 0 auto;
     }
-    /* GLASSMORPHIC BACKGROUND ORB AESTHETICS */
-    .bg-orbs {
-      position: absolute;
-      top: 0;
-      left: 0;
+
+    .app-page {
+      display: none;
+    }
+
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.88);
+    }
+
+    .login-box {
+      width: min(100%, 380px);
+      padding: 30px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: #003b7a;
+      text-align: center;
+      font-family: "Outfit", sans-serif;
+    }
+
+    .login-box input {
       width: 100%;
-      height: 100%;
+      margin-bottom: 12px;
+      padding: 14px;
+      border: 1px solid #d8dee8;
+      border-radius: 10px;
+      color: #0f172a;
+    }
+
+    .login-box button {
+      width: 100%;
+      justify-content: center;
+      padding: 14px;
+      border-radius: 10px;
+      background: #0056b3;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .login-error {
+      min-height: 20px;
+      margin-bottom: 10px;
+      color: #dc2626;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
       z-index: -1;
       overflow: hidden;
       pointer-events: none;
     }
+
     .orb {
       position: absolute;
       border-radius: 50%;
@@ -89,6 +159,7 @@
       mix-blend-mode: screen;
       animation: float 25s infinite alternate;
     }
+
     .orb-1 {
       top: 10%;
       left: 15%;
@@ -96,6 +167,7 @@
       height: 350px;
       background: var(--primary);
     }
+
     .orb-2 {
       top: 50%;
       right: 10%;
@@ -104,851 +176,695 @@
       background: var(--accent);
       animation-delay: -5s;
     }
+
     @keyframes float {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(60px, 40px) scale(1.1); }
-    }    /* PES UNIVERSITY HEADER STYLING */
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(60px, 40px) scale(1.1); }
+    }
+
     .pes-header {
-      background: linear-gradient(135deg, #003b7a, #0056b3);
-      padding: 20px 30px;
-      border-radius: 18px;
-      margin-bottom: 25px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 25px;
+      padding: 20px 30px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      position: relative;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #003b7a, #0056b3);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
     }
-    
+
     [data-theme="dark"] .pes-header {
-      background: linear-gradient(135deg, #031530 0%, #002d5a 100%);
       border-color: rgba(255, 255, 255, 0.05);
+      background: linear-gradient(135deg, #031530 0%, #002d5a 100%);
     }
+
     .pes-brand {
       display: flex;
       align-items: center;
       gap: 18px;
     }
-    .pes-logo {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      background: white;
-      border-radius: 14px;
-      padding: 6px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(0, 59, 122, 0.1);
-    }
-    .pes-header h1 {
-      color: white;
-      font-size: 2.2rem;
-      margin: 0;
-      font-weight: 700;
-      background: none;
-      -webkit-text-fill-color: initial;
-      -webkit-background-clip: initial;
-      letter-spacing: -0.5px;
-      font-family: 'Outfit', sans-serif;
-    }
-    .pes-header .subtitle {
-      color: #dbeafe;
-      font-size: 0.95rem;
-      margin-top: 4px;
-      font-family: 'Inter', sans-serif;
-    }
-    /* Fallback styles if the logo image is missing */
+
+    .pes-logo,
     .pes-logo-fallback {
       width: 72px;
       height: 72px;
-      display: flex;
+      flex: 0 0 72px;
+      border-radius: 14px;
+    }
+
+    .pes-logo {
+      padding: 6px;
+      object-fit: contain;
+      background: #fff;
+      border: 1px solid rgba(0, 59, 122, 0.1);
+    }
+
+    .pes-logo-fallback {
+      display: none;
       align-items: center;
       justify-content: center;
       background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: white;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 1.8rem;
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    /* DEFAULT HEADER (Compatibility fallback) */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      position: relative;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .logo-container {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-      padding: 10px;
-      border-radius: var(--border-radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 15px var(--primary-glow);
-    }
-    .logo-container i {
       color: #fff;
-    }
-    h1 {
-      font-family: 'Outfit', sans-serif;
+      font-family: "Outfit", sans-serif;
+      font-size: 1.8rem;
       font-weight: 800;
-      font-size: 2.2rem;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
-    p.subtitle {
+
+    .pes-header h1 {
+      color: #fff;
+      font-family: "Outfit", sans-serif;
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .subtitle {
       margin-top: 4px;
-      color: var(--text-muted);
+      color: #dbeafe;
       font-size: 0.95rem;
     }
-    
-    .theme-toggle-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text-primary);
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      cursor: pointer;
+
+    .header-actions {
       display: flex;
       align-items: center;
+      gap: 10px;
+    }
+
+    .user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      max-width: 180px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .user-pill span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .icon-btn,
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      transition: all 0.2s ease;
+      width: 46px;
+      height: 46px;
+      border: 1px solid var(--card-border);
+      border-radius: 50%;
+      background: var(--card-bg);
+      color: var(--text-primary);
       box-shadow: var(--card-shadow);
+      transition: transform 0.2s ease, border-color 0.2s ease;
     }
+
+    .icon-btn:hover,
     .theme-toggle-btn:hover {
-      transform: scale(1.08) rotate(15deg);
       border-color: var(--primary);
+      transform: scale(1.06);
     }
-    /* DASHBOARD STATS WIDGETS */
+
     .dashboard-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 15px;
       margin-bottom: 25px;
     }
-    .stat-widget {
+
+    .stat-widget,
+    .top-bar-card,
+    .editor-card,
+    .note,
+    .empty-state,
+    .shimmer-card {
+      border: 1px solid var(--card-border);
       background: var(--card-bg);
+      box-shadow: var(--card-shadow);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border);
-      border-radius: var(--border-radius-md);
-      padding: 16px;
+    }
+
+    .stat-widget {
       display: flex;
       align-items: center;
       gap: 15px;
-      box-shadow: var(--card-shadow);
-      transition: transform 0.2s ease;
+      padding: 16px;
+      border-radius: var(--border-radius-md);
     }
-    .stat-widget:hover {
-      transform: translateY(-2px);
-    }
+
     .stat-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
     }
+
     .stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
     .stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
     .stat-icon.pink { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
     .stat-icon.green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+
     .stat-info h3 {
-      font-size: 1.4rem;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
       color: var(--text-primary);
+      font-family: "Outfit", sans-serif;
+      font-size: 1.4rem;
     }
+
     .stat-info p {
-      font-size: 0.8rem;
       color: var(--text-muted);
-      text-transform: uppercase;
+      font-size: 0.8rem;
       letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
-    /* TOP FILTER & SEARCH BAR */
+
     .top-bar-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border);
-      border-radius: var(--border-radius-md);
-      padding: 16px;
       margin-bottom: 25px;
-      box-shadow: var(--card-shadow);
+      padding: 16px;
+      border-radius: var(--border-radius-md);
     }
+
     .top-bar {
       display: grid;
-      gap: 15px;
       grid-template-columns: 1fr auto;
+      gap: 15px;
       align-items: center;
     }
+
     .search-wrapper {
       position: relative;
       display: flex;
       align-items: center;
     }
-    .search-wrapper i {
+
+    .search-wrapper svg {
       position: absolute;
       left: 16px;
       color: var(--text-muted);
-      pointer-events: none;
     }
-    .top-bar input {
+
+    .top-bar input,
+    textarea {
       width: 100%;
       border: 1px solid var(--card-border);
       border-radius: 14px;
-      padding: 14px 16px 14px 44px;
       background: rgba(0, 0, 0, 0.15);
       color: var(--text-primary);
-      font-size: 0.95rem;
-      transition: all 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .top-bar input:focus {
-      outline: none;
+
+    .top-bar input {
+      padding: 14px 16px 14px 44px;
+    }
+
+    .top-bar input:focus,
+    textarea:focus {
       border-color: var(--primary);
+      outline: none;
       box-shadow: 0 0 10px var(--primary-glow);
     }
-    
-    .toolbar-actions {
+
+    .toolbar-actions,
+    .editor-actions,
+    .note-card-actions,
+    .note-actions-quick {
       display: flex;
       gap: 10px;
-    }
-    .filter-btn, .layout-btn {
-      background: rgba(0, 0, 0, 0.15);
-      border: 1px solid var(--card-border);
-      color: var(--text-primary);
-      padding: 10px 14px;
-      border-radius: 12px;
-      cursor: pointer;
-      display: flex;
       align-items: center;
+    }
+
+    .filter-btn,
+    .layout-btn,
+    .primary,
+    .secondary,
+    .danger-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       gap: 8px;
-      font-weight: 500;
-      font-size: 0.9rem;
-      transition: all 0.2s ease;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
     }
-    .filter-btn:hover, .layout-btn:hover {
-      border-color: var(--primary);
-      background: rgba(0, 0, 0, 0.25);
+
+    .filter-btn,
+    .layout-btn,
+    .secondary {
+      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
     }
-    .filter-btn.active, .layout-btn.active {
-      background: var(--primary);
-      border-color: var(--primary);
+
+    .filter-btn.active,
+    .layout-btn.active,
+    .primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
       color: #fff;
     }
-    /* INTERACTIVE TAG CLOUD */
+
+    .danger-outline {
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.08);
+      color: #ef4444;
+    }
+
+    .filter-btn:hover,
+    .layout-btn:hover,
+    .secondary:hover,
+    .primary:hover,
+    .danger-outline:hover {
+      transform: translateY(-1px);
+    }
+
+    .danger-outline:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+
     .tag-cloud {
-      display: flex;
+      display: none;
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 12px;
       padding-top: 12px;
       border-top: 1px dashed var(--card-border);
     }
+
     .tag-cloud-title {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-      width: 100%;
-      margin-bottom: 4px;
       display: flex;
       align-items: center;
       gap: 5px;
-    }
-    .filter-tag {
-      font-size: 0.8rem;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
+      width: 100%;
+      margin-bottom: 4px;
       color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .filter-tag {
+      display: inline-flex;
       align-items: center;
       gap: 4px;
-    }
-    .filter-tag:hover {
-      background: rgba(99, 102, 241, 0.1);
-      color: var(--primary);
-      border-color: var(--primary-glow);
-    }
-    .filter-tag.active {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-      color: white;
-      border-color: transparent;
-      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.25);
-    }
-    /* THE MAIN NOTE EDITOR CARD */
-    .editor-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      padding: 6px 10px;
       border: 1px solid var(--card-border);
-      border-radius: var(--border-radius-lg);
-      box-shadow: var(--card-shadow);
-      padding: 24px;
-      margin-bottom: 25px;
-      position: relative;
-      overflow: hidden;
-      transition: border-color 0.3s ease;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      font-size: 0.8rem;
     }
+
+    .filter-tag.active {
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+    }
+
+    .editor-card {
+      position: relative;
+      margin-bottom: 25px;
+      padding: 24px;
+      overflow: hidden;
+      border-radius: var(--border-radius-lg);
+    }
+
     .editor-card::before {
-      content: '';
       position: absolute;
       top: 0;
       left: 0;
       width: 4px;
       height: 100%;
       background: linear-gradient(to bottom, var(--primary), var(--accent));
+      content: "";
     }
-    
+
     .editor-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       margin-bottom: 12px;
     }
+
     .editor-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: var(--text-primary);
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-    
-    textarea {
-      width: 100%;
-      min-height: 120px;
-      resize: vertical;
-      padding: 16px;
-      border-radius: var(--border-radius-md);
-      border: 1px solid var(--card-border);
-      background: rgba(0, 0, 0, 0.15);
       color: var(--text-primary);
-      font-size: 1rem;
-      line-height: 1.6;
+      font-family: "Outfit", sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    textarea {
+      min-height: 120px;
       margin-bottom: 16px;
-      transition: all 0.2s ease;
-      font-family: inherit;
+      padding: 16px;
+      resize: vertical;
+      line-height: 1.6;
     }
-    textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 10px var(--primary-glow);
-      background: rgba(0, 0, 0, 0.25);
-    }
-    /* DRAG AND DROP ZONE */
+
     .dropzone {
-      border: 2px dashed var(--card-border);
-      border-radius: var(--border-radius-md);
-      padding: 20px;
-      text-align: center;
-      background: rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      transition: all 0.25s ease;
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
       margin-bottom: 16px;
-      position: relative;
+      padding: 20px;
+      border: 2px dashed var(--card-border);
+      border-radius: var(--border-radius-md);
+      background: rgba(0, 0, 0, 0.1);
+      color: var(--text-muted);
+      text-align: center;
+      transition: border-color 0.2s ease, background 0.2s ease;
     }
-    .dropzone:hover, .dropzone.dragover {
+
+    .dropzone.dragover,
+    .dropzone:hover {
       border-color: var(--primary);
-      background: rgba(99, 102, 241, 0.05);
-      box-shadow: inset 0 0 12px rgba(99, 102, 241, 0.05);
+      background: rgba(0, 119, 242, 0.06);
     }
-    .dropzone i {
-      font-size: 2rem;
-      color: var(--text-muted);
-      transition: all 0.2s ease;
-    }
-    .dropzone:hover i, .dropzone.dragover i {
-      color: var(--primary);
-      transform: translateY(-2px);
-    }
-    .dropzone p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
+
     .dropzone input[type="file"] {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       opacity: 0;
       cursor: pointer;
     }
-    /* RICH FILE PREVIEW */
+
     .preview {
-      border-radius: var(--border-radius-md);
+      display: none;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
       padding: 12px 16px;
       border: 1px solid var(--card-border);
+      border-radius: var(--border-radius-md);
       background: rgba(0, 0, 0, 0.2);
-      color: var(--text-muted);
-      display: none;
-      gap: 14px;
-      align-items: center;
-      margin-bottom: 16px;
-      position: relative;
-      animation: slideDown 0.25s ease;
     }
-    
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .preview img {
-      max-width: 64px;
-      max-height: 64px;
-      object-fit: cover;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
+
+    .preview img,
     .file-icon-badge {
-      width: 50px;
-      height: 50px;
+      width: 58px;
+      height: 58px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      display: flex;
+    }
+
+    .preview img {
+      object-fit: cover;
+    }
+
+    .file-icon-badge {
+      display: none;
       align-items: center;
       justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
       color: var(--primary);
-      font-size: 1.5rem;
     }
+
     .preview-info {
-      flex-grow: 1;
-      overflow: hidden;
+      min-width: 0;
+      flex: 1;
     }
+
     .preview-info p {
-      margin: 0;
-      font-size: 0.85rem;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .preview-info p.name {
-      font-weight: 600;
+
+    .preview-info .name {
       color: var(--text-primary);
+      font-weight: 700;
     }
-    .preview-info p.size {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+
+    .preview-info .size {
       margin-top: 2px;
-    }
-    
-    .clear-file-btn {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      color: #ef4444;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-    .clear-file-btn:hover {
-      background: #ef4444;
-      color: #fff;
-    }
-    /* ACTION BUTTONS */
-    .editor-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-    
-    button {
-      padding: 12px 24px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-radius: 12px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      border: none;
-      outline: none;
-    }
-    
-    button.primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-      color: white;
-      box-shadow: 0 4px 15px var(--primary-glow);
-    }
-    button.primary:hover {
-      background: linear-gradient(135deg, var(--primary-hover) 0%, #001f4d 100%);
-      transform: translateY(-1.5px);
-      box-shadow: 0 6px 20px var(--primary-glow);
-      opacity: 0.95;
-    }
-    button.primary:active {
-      transform: translateY(0);
-    }
-    
-    button.secondary {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-primary);
-      border: 1px solid var(--card-border);
-    }
-    button.secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: var(--text-muted);
-    }
-    
-    button.danger-outline {
-      background: rgba(239, 68, 68, 0.05);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-    button.danger-outline:hover {
-      background: #ef4444;
-      color: white;
-      border-color: #ef4444;
-    }
-    
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-    /* NOTES LIST GRID */
-    .notes-grid {
-      display: grid;
-      gap: 20px;
-      transition: all 0.3s ease;
-    }
-    .notes-grid.grid-view {
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
-    .notes-grid.list-view {
-      grid-template-columns: 1fr;
-    }
-    /* THE NOTE CARD */
-    .note {
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border);
-      border-radius: var(--border-radius-md);
-      box-shadow: var(--card-shadow);
-      padding: 20px;
-      position: relative;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      animation: popIn 0.3s ease;
-    }
-    
-    @keyframes popIn {
-      from { opacity: 0; transform: scale(0.95) translateY(10px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    .note:hover {
-      transform: translateY(-4px);
-      border-color: var(--primary-glow);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    }
-    
-    /* Pinned and Starred Special Indicators */
-    .note.pinned {
-      border-left: 4px solid var(--warning);
-    }
-    .note.pinned::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      border-width: 0 16px 16px 0;
-      border-style: solid;
-      border-color: transparent var(--warning) transparent transparent;
-    }
-    /* Starred Special glow */
-    .note.starred {
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.05), var(--card-shadow);
-    }
-    /* NOTE HEADER / META */
-    .note-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
       color: var(--text-muted);
       font-size: 0.8rem;
     }
-    .note-date {
+
+    .clear-file-btn,
+    .quick-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+    }
+
+    .clear-file-btn {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+
+    .editor-actions {
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .notes-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .notes-grid.grid-view {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    .notes-grid.list-view {
+      grid-template-columns: 1fr;
+    }
+
+    .note {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 20px;
+      overflow: hidden;
+      border-radius: var(--border-radius-md);
+    }
+
+    .note.pinned {
+      border-left: 4px solid var(--warning);
+    }
+
+    .note.starred {
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.08), var(--card-shadow);
+    }
+
+    .note-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .note-date,
+    .note-author {
       display: flex;
       align-items: center;
       gap: 5px;
     }
-    .note-actions-quick {
-      display: flex;
-      gap: 6px;
-    }
-    .quick-action-btn {
-      background: transparent;
-      border: none;
+
+    .note-author {
+      margin-bottom: 10px;
       color: var(--text-muted);
-      cursor: pointer;
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
+      font-size: 0.82rem;
+      font-weight: 700;
     }
-    .quick-action-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-primary);
-    }
-    .quick-action-btn.active-pin {
-      color: var(--warning);
-    }
+
+    .quick-action-btn.active-pin,
     .quick-action-btn.active-star {
       color: var(--warning);
-      fill: var(--warning);
     }
-    /* NOTE CONTENT */
+
     .note-content {
+      flex: 1;
+      margin-bottom: 14px;
+      color: var(--text-primary);
       font-size: 0.95rem;
       line-height: 1.65;
-      color: var(--text-primary);
-      flex-grow: 1;
-      margin-bottom: 14px;
-      word-wrap: break-word;
       word-break: break-word;
     }
-    
-    /* Markdown overrides in notes */
-    .note-content p {
+
+    .note-content p,
+    .note-content ul,
+    .note-content ol,
+    .note-content pre {
       margin-bottom: 8px;
     }
-    .note-content p:last-child {
-      margin-bottom: 0;
-    }
-    .note-content ul, .note-content ol {
+
+    .note-content ul,
+    .note-content ol {
       margin-left: 20px;
-      margin-bottom: 8px;
     }
+
     .note-content code {
-      font-family: monospace;
-      background: rgba(255, 255, 255, 0.08);
       padding: 2px 5px;
       border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
       font-size: 0.85em;
     }
+
     .note-content pre {
-      background: rgba(0, 0, 0, 0.2);
-      padding: 10px;
-      border-radius: 8px;
       overflow-x: auto;
-      margin: 10px 0;
+      padding: 10px;
       border: 1px solid var(--card-border);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
     }
-    .note-content h1, .note-content h2, .note-content h3 {
-      font-family: 'Outfit', sans-serif;
-      margin: 12px 0 6px;
-      font-size: 1.15rem;
-      font-weight: 600;
-    }
-    .note-content h1 { font-size: 1.3rem; }
-    
-    /* Tag Highlight Styling */
+
     .note-tag-highlight {
-      background: rgba(99, 102, 241, 0.15);
-      color: var(--primary);
       padding: 1px 4px;
       border-radius: 4px;
-      font-weight: 500;
-      cursor: pointer;
+      background: rgba(0, 119, 242, 0.16);
+      color: var(--primary);
+      font-weight: 700;
     }
-    .note-tag-highlight:hover {
-      background: var(--primary);
-      color: white;
-    }
-    
-    /* Search Highlight Marker */
+
     mark {
-      background: rgba(245, 158, 11, 0.3);
-      color: #fff;
       padding: 0 2px;
       border-radius: 2px;
-      border-bottom: 1.5px solid var(--warning);
+      background: rgba(245, 158, 11, 0.35);
+      color: #fff;
     }
-    /* NOTE ATTACHMENTS */
+
     .note-attachment {
       margin-top: auto;
       margin-bottom: 14px;
-      border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--card-border);
+      border-radius: 12px;
     }
+
     .attachment-img-wrapper {
       position: relative;
-      cursor: zoom-in;
+      aspect-ratio: 16 / 10;
       overflow: hidden;
-      aspect-ratio: 16/10;
-      background: rgba(0,0,0,0.1);
+      background: rgba(0, 0, 0, 0.12);
+      cursor: zoom-in;
     }
+
     .attachment-img-wrapper img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
     }
-    .attachment-img-wrapper:hover img {
-      transform: scale(1.03);
-    }
+
     .attachment-overlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.4);
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: rgba(0, 0, 0, 0.4);
       opacity: 0;
       transition: opacity 0.2s ease;
     }
-    .attachment-img-wrapper:hover class,
+
     .attachment-img-wrapper:hover .attachment-overlay {
       opacity: 1;
     }
-    .attachment-overlay i {
-      color: white;
-      font-size: 1.5rem;
-    }
-    
-    /* Non-image attachment card */
+
     .doc-attachment-card {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 12px;
-      background: rgba(0, 0, 0, 0.15);
-      border-radius: 12px;
-      text-decoration: none;
       color: var(--text-primary);
-      transition: all 0.2s ease;
+      text-decoration: none;
+      background: rgba(0, 0, 0, 0.15);
     }
-    .doc-attachment-card:hover {
-      background: rgba(0, 0, 0, 0.25);
-      border-color: var(--primary);
-    }
+
     .doc-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      background: rgba(99, 102, 241, 0.1);
-      color: var(--primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: rgba(0, 119, 242, 0.14);
+      color: var(--primary);
     }
+
     .doc-info {
-      flex-grow: 1;
-      overflow: hidden;
+      min-width: 0;
+      flex: 1;
     }
+
     .doc-title {
-      font-size: 0.85rem;
-      font-weight: 600;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-size: 0.85rem;
+      font-weight: 700;
     }
+
     .doc-subtitle {
-      font-size: 0.75rem;
+      margin-top: 2px;
       color: var(--text-muted);
-      margin-top: 1px;
+      font-size: 0.75rem;
     }
-    /* CARD FOOTER ACTIONS */
+
     .note-footer {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: auto;
       padding-top: 12px;
       border-top: 1px solid var(--card-border);
-      margin-top: auto;
     }
-    .note-card-actions {
-      display: flex;
-      gap: 8px;
-    }
+
     .note-card-actions button {
-      padding: 8px 14px;
-      font-size: 0.8rem;
+      padding: 8px 12px;
       border-radius: 8px;
-      min-width: unset;
+      font-size: 0.8rem;
     }
-    
-    /* SHIMMER LOADERS */
-    .shimmer-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--border-radius-md);
-      padding: 20px;
-      min-height: 200px;
+
+    .empty-state {
+      grid-column: 1 / -1;
       display: flex;
       flex-direction: column;
-      gap: 15px;
-      position: relative;
-      overflow: hidden;
+      align-items: center;
+      gap: 14px;
+      padding: 50px 20px;
+      border-style: dashed;
+      border-radius: var(--border-radius-md);
+      color: var(--text-muted);
+      text-align: center;
     }
-    .shimmer-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      transform: translateX(-100%);
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.05) 20%, rgba(255, 255, 255, 0.1) 60%, rgba(255, 255, 255, 0) 100%);
-      animation: shimmer 1.5s infinite;
+
+    .empty-state h3 {
+      color: var(--text-primary);
+      font-family: "Outfit", sans-serif;
     }
-    @keyframes shimmer {
-      100% { transform: translateX(100%); }
+
+    .shimmer-card {
+      min-height: 200px;
+      padding: 20px;
+      border-radius: var(--border-radius-md);
     }
-    .shimmer-line {
-      height: 14px;
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 4px;
-    }
-    .shimmer-line.header { width: 40%; height: 18px; }
-    .shimmer-line.body-1 { width: 90%; }
-    .shimmer-line.body-2 { width: 85%; }
-    .shimmer-line.body-3 { width: 60%; }
-    .shimmer-box { height: 80px; background: rgba(255, 255, 255, 0.04); border-radius: 8px; }
-    /* CUSTOM TOAST SYSTEM */
+
     .toast-container {
       position: fixed;
       top: 24px;
@@ -959,269 +875,213 @@
       gap: 12px;
       pointer-events: none;
     }
+
     .toast {
-      pointer-events: auto;
-      background: rgba(20, 26, 42, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 14px 20px;
-      color: #fff;
       display: flex;
       align-items: center;
       gap: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-      transform: translateX(120%);
-      opacity: 0;
-      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       min-width: 280px;
       max-width: 400px;
+      padding: 14px 20px;
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--primary);
+      border-radius: 16px;
+      background: rgba(20, 26, 42, 0.95);
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      pointer-events: auto;
+      transform: translateX(120%);
+      transition: transform 0.35s ease, opacity 0.35s ease;
     }
+
     .toast.show {
-      transform: translateX(0);
       opacity: 1;
+      transform: translateX(0);
     }
-    .toast.success { border-left: 4px solid var(--success); }
-    .toast.error { border-left: 4px solid var(--danger); }
-    .toast.info { border-left: 4px solid var(--primary); }
-    .toast.warning { border-left: 4px solid var(--warning); }
-    
-    .toast i { font-size: 1.2rem; }
-    .toast.success i { color: var(--success); }
-    .toast.error i { color: var(--danger); }
-    .toast.info i { color: var(--primary); }
-    .toast.warning i { color: var(--warning); }
-    
-    .toast-content {
-      font-size: 0.9rem;
-      font-weight: 500;
-      line-height: 1.4;
-    }
-    /* FULLSCREEN LIGHTBOX MODAL */
+
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.warning { border-left-color: var(--warning); }
+
     .lightbox {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(5, 7, 12, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      inset: 0;
       z-index: 10000;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: rgba(5, 7, 12, 0.95);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
     }
+
     .lightbox.show {
       opacity: 1;
       pointer-events: auto;
     }
+
     .lightbox-content {
       position: relative;
-      max-width: 90%;
-      max-height: 85%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      animation: zoomIn 0.3s ease;
+      max-width: 90%;
+      max-height: 85%;
     }
-    @keyframes zoomIn {
-      from { transform: scale(0.9); }
-      to { transform: scale(1); }
-    }
+
     .lightbox-content img {
       max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
+      max-height: 80vh;
       border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      object-fit: contain;
     }
+
     .lightbox-caption {
       margin-top: 15px;
       color: #fff;
-      font-weight: 500;
-      font-size: 0.95rem;
+      font-weight: 600;
       text-align: center;
     }
+
     .lightbox-close-btn {
       position: absolute;
       top: -45px;
       right: 0;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s ease;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1.4rem;
     }
-    .lightbox-close-btn:hover {
-      background: rgba(255,255,255,0.2);
-    }
-    
-    /* NO DATA EMPTY STATE */
-    .empty-state {
-      text-align: center;
-      padding: 50px 20px;
-      color: var(--text-muted);
-      background: var(--card-bg);
-      border: 1px dashed var(--card-border);
-      border-radius: var(--border-radius-md);
-      box-shadow: var(--card-shadow);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-    }
-    .empty-state i {
-      font-size: 3.5rem;
-      color: var(--primary-glow);
-    }
-    .empty-state h3 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.3rem;
-      color: var(--text-primary);
-    }
-    .empty-state p {
-      font-size: 0.9rem;
-      max-width: 350px;
-      line-height: 1.5;
-    }
-    /* RESPONSIVE LAYOUTS */
+
     @media (max-width: 768px) {
       body { padding: 20px 15px; }
-      h1 { font-size: 1.8rem; }
-      .dashboard-stats { grid-template-columns: 1fr 1fr; }
+      .pes-header { align-items: flex-start; padding: 18px; }
+      .pes-brand { align-items: flex-start; }
+      .pes-header h1 { font-size: 1.8rem; }
       .top-bar { grid-template-columns: 1fr; }
       .toolbar-actions { width: 100%; justify-content: space-between; }
-      .filter-btn, .layout-btn { flex-grow: 1; justify-content: center; }
+      .filter-btn { flex: 1; }
+      .dashboard-stats { grid-template-columns: 1fr 1fr; }
+      .header-actions { flex-wrap: wrap; justify-content: flex-end; }
     }
-    
-    @media (max-width: 480px) {
+
+    @media (max-width: 520px) {
       .dashboard-stats { grid-template-columns: 1fr; }
+      .pes-header { flex-direction: column; }
+      .toolbar-actions { flex-wrap: wrap; }
+      .note-footer { align-items: flex-start; flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <!-- Ambient background graphics -->
-  <div class="bg-orbs">
+  <div class="login-overlay" id="loginOverlay">
+    <form class="login-box" id="loginForm">
+      <h2>Student Login</h2>
+      <p class="login-error" id="loginError"></p>
+      <input type="text" id="loginUsername" placeholder="Username" autocomplete="username" />
+      <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" />
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <div class="bg-orbs" aria-hidden="true">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
   </div>
-  <div class="page">
+
+  <main class="page app-page" id="appPage">
     <header class="pes-header">
       <div class="pes-brand">
-        <img src="PES logo.jpeg" alt="PES University Logo" class="pes-logo" id="pesLogoImg" onerror="handleLogoError()">
-        <div id="pesLogoFallback" class="pes-logo-fallback" style="display: none;">PES</div>
+        <img src="PES logo.jpeg" alt="PES University Logo" class="pes-logo" id="pesLogoImg" />
+        <div id="pesLogoFallback" class="pes-logo-fallback">PES</div>
         <div>
           <h1>ChartBox</h1>
-          <p class="subtitle">PES University Notes Portal • Store Notes • PDFs • Assignments</p>
+          <p class="subtitle">PES University Notes Portal - Store Notes, PDFs, and Assignments</p>
         </div>
       </div>
-      <button class="theme-toggle-btn" id="themeToggleBtn" title="Switch Theme">
-        <i data-lucide="sun" class="sun-icon" style="display:none;" width="20" height="20"></i>
-        <i data-lucide="moon" class="moon-icon" width="20" height="20"></i>
-      </button>
+
+      <div class="header-actions">
+        <div class="user-pill" title="Logged in user">
+          <i data-lucide="user" width="16" height="16"></i>
+          <span id="loggedInUserLabel">Student</span>
+        </div>
+        <button type="button" class="theme-toggle-btn" id="themeToggleBtn" title="Switch theme">
+          <i data-lucide="sun" class="sun-icon" width="20" height="20"></i>
+          <i data-lucide="moon" class="moon-icon" width="20" height="20"></i>
+        </button>
+        <button type="button" class="icon-btn" id="logoutBtn" title="Logout">
+          <i data-lucide="log-out" width="20" height="20"></i>
+        </button>
+      </div>
     </header>
-    <!-- Animated Dashboard Stats Widget -->
-    <section class="dashboard-stats" id="statsDashboard">
+
+    <section class="dashboard-stats">
       <div class="stat-widget">
-        <div class="stat-icon blue">
-          <i data-lucide="book-open" width="20" height="20"></i>
-        </div>
-        <div class="stat-info">
-          <h3 id="statTotalNotes">0</h3>
-          <p>Total Notes</p>
-        </div>
+        <div class="stat-icon blue"><i data-lucide="book-open" width="20" height="20"></i></div>
+        <div class="stat-info"><h3 id="statTotalNotes">0</h3><p>Total Notes</p></div>
       </div>
       <div class="stat-widget">
-        <div class="stat-icon green">
-          <i data-lucide="pin" width="20" height="20"></i>
-        </div>
-        <div class="stat-info">
-          <h3 id="statPinnedNotes">0</h3>
-          <p>Pinned</p>
-        </div>
+        <div class="stat-icon green"><i data-lucide="pin" width="20" height="20"></i></div>
+        <div class="stat-info"><h3 id="statPinnedNotes">0</h3><p>Pinned</p></div>
       </div>
       <div class="stat-widget">
-        <div class="stat-icon purple">
-          <i data-lucide="star" width="20" height="20"></i>
-        </div>
-        <div class="stat-info">
-          <h3 id="statStarredNotes">0</h3>
-          <p>Starred</p>
-        </div>
+        <div class="stat-icon purple"><i data-lucide="star" width="20" height="20"></i></div>
+        <div class="stat-info"><h3 id="statStarredNotes">0</h3><p>Starred</p></div>
       </div>
       <div class="stat-widget">
-        <div class="stat-icon pink">
-          <i data-lucide="paperclip" width="20" height="20"></i>
-        </div>
-        <div class="stat-info">
-          <h3 id="statTotalFiles">0</h3>
-          <p>Attachments</p>
-        </div>
+        <div class="stat-icon pink"><i data-lucide="paperclip" width="20" height="20"></i></div>
+        <div class="stat-info"><h3 id="statTotalFiles">0</h3><p>Attachments</p></div>
       </div>
     </section>
-    <!-- Interactive Top Bar for Search and Layout toggles -->
+
     <section class="top-bar-card">
       <div class="top-bar">
         <div class="search-wrapper">
           <i data-lucide="search" width="18" height="18"></i>
-          <input id="searchInput" type="search" placeholder="Type here to search contents or #tags..." />
+          <input id="searchInput" type="search" placeholder="Search contents or #tags..." />
         </div>
         <div class="toolbar-actions">
-          <button class="filter-btn" id="starredFilterBtn" title="Toggle Starred Only">
+          <button type="button" class="filter-btn" id="starredFilterBtn" title="Toggle starred notes">
             <i data-lucide="star" width="16" height="16"></i>
             <span>Starred Only</span>
           </button>
-          <button class="layout-btn active" id="layoutGridBtn" title="Grid Layout">
+          <button type="button" class="layout-btn active" id="layoutGridBtn" title="Grid layout">
             <i data-lucide="layout-grid" width="16" height="16"></i>
           </button>
-          <button class="layout-btn" id="layoutListBtn" title="List Layout">
+          <button type="button" class="layout-btn" id="layoutListBtn" title="List layout">
             <i data-lucide="list" width="16" height="16"></i>
           </button>
         </div>
       </div>
-      <!-- Live Interactive Tag Cloud -->
-      <div class="tag-cloud" id="tagCloudContainer" style="display: none;">
-        <span class="tag-cloud-title">
-          <i data-lucide="tag" width="12" height="12"></i>
-          Filter by tag
-        </span>
-        <!-- Tags injected here -->
-      </div>
+      <div class="tag-cloud" id="tagCloudContainer"></div>
     </section>
-    <!-- Main Responsive Note Form / Card Editor -->
+
     <section class="editor-card" id="editorCard">
       <div class="editor-header">
         <span class="editor-title" id="editorTitleText">
-          <i data-lucide="pencil-line" width="18" height="18" style="color:var(--primary);"></i>
+          <i data-lucide="pencil-line" width="18" height="18"></i>
           Compose a New Note
         </span>
       </div>
-      
-      <textarea id="noteInput" placeholder="Draft note... Supports full markdown (# header, * bullet, **bold**, `code`) and hashtags (#work, #personal)"></textarea>
-      <!-- Advanced drag & drop area -->
+
+      <textarea id="noteInput" placeholder="Draft note... Supports markdown and hashtags like #work or #assignment"></textarea>
+
       <div class="dropzone" id="dropZone">
         <i data-lucide="upload-cloud" width="36" height="36"></i>
         <div>
-          <p><strong>Drag & drop file here</strong> or click to select</p>
-          <p style="font-size: 0.75rem; margin-top: 4px;">Supports Images, PDFs, Docs, TXT, Slides (Max 15MB)</p>
+          <p><strong>Drag and drop file here</strong> or click to select</p>
+          <p style="font-size: 0.75rem; margin-top: 4px;">Images, PDFs, Docs, TXT, Slides - Max 15MB</p>
         </div>
         <input type="file" id="imageInput" accept="image/*,.pdf,.doc,.docx,.txt,.ppt,.pptx" />
       </div>
-      <!-- Styled Pre-Upload Attachment Preview Box -->
+
       <div class="preview" id="imagePreview">
-        <img alt="Preview thumbnail" id="previewThumb" src="" style="display:none;" />
-        <div class="file-icon-badge" id="previewIconBadge" style="display:none;">
+        <img alt="Preview thumbnail" id="previewThumb" src="" />
+        <div class="file-icon-badge" id="previewIconBadge">
           <i data-lucide="file-text" width="24" height="24"></i>
         </div>
         <div class="preview-info">
@@ -1232,739 +1092,773 @@
           <i data-lucide="trash-2" width="16" height="16"></i>
         </button>
       </div>
+
       <div class="editor-actions">
-        <button class="secondary" type="button" onclick="resetForm()">
+        <button type="button" class="secondary" id="resetButton">
           <i data-lucide="rotate-ccw" width="16" height="16"></i>
           <span>Clear Fields</span>
         </button>
-        <button class="primary" id="saveButton" onclick="saveNote()">
+        <button type="button" class="primary" id="saveButton">
           <i data-lucide="send" width="16" height="16" id="saveBtnIcon"></i>
           <span id="saveBtnText">Publish Note</span>
         </button>
       </div>
     </section>
-    <!-- Notes feed container -->
+
     <section class="notes-grid grid-view" id="notesList"></section>
-  </div>
-  <!-- Custom slide-in toast notifications container -->
+  </main>
+
   <div class="toast-container" id="toastContainer"></div>
-  <!-- Lightbox immersive fullscreen view modal -->
-  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <div class="lightbox-content" onclick="event.stopPropagation()">
-      <button class="lightbox-close-btn" onclick="closeLightbox()">&times;</button>
-      <img src="" id="lightboxImg" alt="Expanded Note Media" />
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+      <button type="button" class="lightbox-close-btn" id="lightboxCloseBtn">&times;</button>
+      <img src="" id="lightboxImg" alt="Expanded note media" />
       <div class="lightbox-caption" id="lightboxCaption"></div>
     </div>
   </div>
+
   <script>
-    // PES University Logo Error Fallback Handler
-    function handleLogoError() {
-      const img = document.getElementById("pesLogoImg");
-      const fallback = document.getElementById("pesLogoFallback");
-      if (img) img.style.display = "none";
-      if (fallback) fallback.style.display = "flex";
-    }
-    // Supabase Credentials (Maintained as requested)
     const SUPABASE_URL = "https://kuengnoohosovnnibqlb.supabase.co";
     const SUPABASE_KEY = "sb_publishable_y4XzOOhE84fof3YZK4qz-w_KSCMXLlz";
     const { createClient } = supabase;
     const db = createClient(SUPABASE_URL, SUPABASE_KEY);
-    // Dynamic Variables & State
-    let notesData = [];
-    let currentFilterTag = null;
-    let starredOnlyFilter = false;
-    let currentViewMode = "grid"; // grid or list
-    let editingNoteId = null; // tracking edit state
-    let editingFileUrl = null; // tracking existing file URL during editing
-    // DOM Elements
-    const noteInput = document.getElementById("noteInput");
-    const imageInput = document.getElementById("imageInput");
-    const dropZone = document.getElementById("dropZone");
-    const notesList = document.getElementById("notesList");
-    const searchInput = document.getElementById("searchInput");
-    const clearImageButton = document.getElementById("clearImageButton");
-    const imagePreview = document.getElementById("imagePreview");
-    const previewThumb = document.getElementById("previewThumb");
-    const previewIconBadge = document.getElementById("previewIconBadge");
-    const previewName = document.getElementById("previewName");
-    const previewSize = document.getElementById("previewSize");
-    
-    // Editor styling hooks
-    const editorCard = document.getElementById("editorCard");
-    const editorTitleText = document.getElementById("editorTitleText");
-    const saveButton = document.getElementById("saveButton");
-    const saveBtnText = document.getElementById("saveBtnText");
-    const saveBtnIcon = document.getElementById("saveBtnIcon");
-    // Stats Elements
-    const statTotalNotes = document.getElementById("statTotalNotes");
-    const statPinnedNotes = document.getElementById("statPinnedNotes");
-    const statStarredNotes = document.getElementById("statStarredNotes");
-    const statTotalFiles = document.getElementById("statTotalFiles");
-    // Filter Buttons
-    const starredFilterBtn = document.getElementById("starredFilterBtn");
-    const layoutGridBtn = document.getElementById("layoutGridBtn");
-    const layoutListBtn = document.getElementById("layoutListBtn");
-    const tagCloudContainer = document.getElementById("tagCloudContainer");
-    // Theme elements
-    const themeToggleBtn = document.getElementById("themeToggleBtn");
-    const sunIcon = themeToggleBtn.querySelector(".sun-icon");
-    const moonIcon = themeToggleBtn.querySelector(".moon-icon");
-    // Configure marked options
-    marked.setOptions({
-      breaks: true,
-      sanitize: true
-    });
-    // --- Elegant Toast System ---
+
+    const state = {
+      notes: [],
+      currentFilterTag: null,
+      starredOnly: false,
+      viewMode: "grid",
+      editingNoteId: null,
+      editingFileUrl: null,
+      loggedInUser: localStorage.getItem("chartbox_username") || ""
+    };
+
+    const els = {
+      appPage: document.getElementById("appPage"),
+      loginOverlay: document.getElementById("loginOverlay"),
+      loginForm: document.getElementById("loginForm"),
+      loginUsername: document.getElementById("loginUsername"),
+      loginPassword: document.getElementById("loginPassword"),
+      loginError: document.getElementById("loginError"),
+      loggedInUserLabel: document.getElementById("loggedInUserLabel"),
+      logoutBtn: document.getElementById("logoutBtn"),
+      pesLogoImg: document.getElementById("pesLogoImg"),
+      pesLogoFallback: document.getElementById("pesLogoFallback"),
+      themeToggleBtn: document.getElementById("themeToggleBtn"),
+      sunIcon: document.querySelector(".sun-icon"),
+      moonIcon: document.querySelector(".moon-icon"),
+      noteInput: document.getElementById("noteInput"),
+      imageInput: document.getElementById("imageInput"),
+      dropZone: document.getElementById("dropZone"),
+      imagePreview: document.getElementById("imagePreview"),
+      previewThumb: document.getElementById("previewThumb"),
+      previewIconBadge: document.getElementById("previewIconBadge"),
+      previewName: document.getElementById("previewName"),
+      previewSize: document.getElementById("previewSize"),
+      clearImageButton: document.getElementById("clearImageButton"),
+      resetButton: document.getElementById("resetButton"),
+      saveButton: document.getElementById("saveButton"),
+      saveBtnText: document.getElementById("saveBtnText"),
+      saveBtnIcon: document.getElementById("saveBtnIcon"),
+      editorCard: document.getElementById("editorCard"),
+      editorTitleText: document.getElementById("editorTitleText"),
+      searchInput: document.getElementById("searchInput"),
+      starredFilterBtn: document.getElementById("starredFilterBtn"),
+      layoutGridBtn: document.getElementById("layoutGridBtn"),
+      layoutListBtn: document.getElementById("layoutListBtn"),
+      tagCloudContainer: document.getElementById("tagCloudContainer"),
+      notesList: document.getElementById("notesList"),
+      statTotalNotes: document.getElementById("statTotalNotes"),
+      statPinnedNotes: document.getElementById("statPinnedNotes"),
+      statStarredNotes: document.getElementById("statStarredNotes"),
+      statTotalFiles: document.getElementById("statTotalFiles"),
+      lightbox: document.getElementById("lightbox"),
+      lightboxImg: document.getElementById("lightboxImg"),
+      lightboxCaption: document.getElementById("lightboxCaption"),
+      lightboxCloseBtn: document.getElementById("lightboxCloseBtn")
+    };
+
+    marked.setOptions({ breaks: true, gfm: true });
+
+    function init() {
+      initTheme();
+      bindEvents();
+      refreshIcons();
+
+      if (state.loggedInUser) {
+        showApp();
+      } else {
+        showLogin();
+      }
+    }
+
+    function bindEvents() {
+      els.loginForm.addEventListener("submit", studentLogin);
+      els.logoutBtn.addEventListener("click", logout);
+
+      els.pesLogoImg.addEventListener("error", () => {
+        els.pesLogoImg.style.display = "none";
+        els.pesLogoFallback.style.display = "flex";
+      });
+
+      els.themeToggleBtn.addEventListener("click", toggleTheme);
+      els.saveButton.addEventListener("click", saveNote);
+      els.resetButton.addEventListener("click", resetForm);
+      els.clearImageButton.addEventListener("click", clearSelectedFile);
+
+      els.searchInput.addEventListener("input", renderNotesFeed);
+      els.starredFilterBtn.addEventListener("click", () => {
+        state.starredOnly = !state.starredOnly;
+        els.starredFilterBtn.classList.toggle("active", state.starredOnly);
+        renderNotesFeed();
+      });
+
+      els.layoutGridBtn.addEventListener("click", () => setViewMode("grid"));
+      els.layoutListBtn.addEventListener("click", () => setViewMode("list"));
+
+      els.dropZone.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        els.dropZone.classList.add("dragover");
+      });
+
+      els.dropZone.addEventListener("dragleave", () => {
+        els.dropZone.classList.remove("dragover");
+      });
+
+      els.dropZone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        els.dropZone.classList.remove("dragover");
+        const file = event.dataTransfer.files[0];
+        if (!file) return;
+        els.imageInput.files = event.dataTransfer.files;
+        handleFileSelection(file);
+      });
+
+      els.imageInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (file) handleFileSelection(file);
+      });
+
+      els.lightbox.addEventListener("click", closeLightbox);
+      els.lightboxCloseBtn.addEventListener("click", closeLightbox);
+      els.lightboxImg.parentElement.addEventListener("click", (event) => event.stopPropagation());
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeLightbox();
+      });
+    }
+
+    function studentLogin(event) {
+      event.preventDefault();
+      const username = els.loginUsername.value.trim();
+      const password = els.loginPassword.value.trim();
+
+      els.loginError.textContent = "";
+
+      if (!username || !password) {
+        els.loginError.textContent = "Please enter both username and password.";
+        return;
+      }
+
+      state.loggedInUser = username;
+      localStorage.setItem("chartbox_username", username);
+      els.loginPassword.value = "";
+      showApp();
+      showToast("Welcome " + username, "success");
+    }
+
+    function showLogin() {
+      els.loginOverlay.style.display = "flex";
+      els.appPage.style.display = "none";
+      setTimeout(() => els.loginUsername.focus(), 50);
+    }
+
+    function showApp() {
+      els.loggedInUserLabel.textContent = state.loggedInUser;
+      els.loginOverlay.style.display = "none";
+      els.appPage.style.display = "block";
+      loadNotes();
+    }
+
+    function logout() {
+      localStorage.removeItem("chartbox_username");
+      state.loggedInUser = "";
+      state.notes = [];
+      resetForm();
+      els.notesList.innerHTML = "";
+      els.loginUsername.value = "";
+      els.loginPassword.value = "";
+      showLogin();
+      showToast("Logged out successfully.", "info");
+    }
+
+    function initTheme() {
+      setTheme(localStorage.getItem("chartbox_theme") || "dark");
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("chartbox_theme", theme);
+      els.sunIcon.style.display = theme === "dark" ? "block" : "none";
+      els.moonIcon.style.display = theme === "light" ? "block" : "none";
+      refreshIcons();
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+      const nextTheme = currentTheme === "light" ? "dark" : "light";
+      setTheme(nextTheme);
+      showToast("Switched to " + nextTheme + " mode.", "info");
+    }
+
     function showToast(message, type = "success") {
-      const container = document.getElementById("toastContainer");
       const toast = document.createElement("div");
-      toast.className = `toast ${type}`;
-      
+      toast.className = "toast " + type;
+
       let icon = "check-circle";
       if (type === "error") icon = "alert-circle";
       if (type === "warning") icon = "alert-triangle";
       if (type === "info") icon = "info";
-      
+
       toast.innerHTML = `
         <i data-lucide="${icon}"></i>
-        <div class="toast-content">${message}</div>
+        <div>${escapeHTML(message)}</div>
       `;
-      
-      container.appendChild(toast);
-      lucide.createIcons();
-      
-      // Delay slightly for animation frame
+
+      document.getElementById("toastContainer").appendChild(toast);
+      refreshIcons();
       setTimeout(() => toast.classList.add("show"), 50);
-      
-      // Auto dismiss
       setTimeout(() => {
         toast.classList.remove("show");
         setTimeout(() => toast.remove(), 400);
       }, 3500);
     }
-    // --- Theme Management ---
-    function initTheme() {
-      const storedTheme = localStorage.getItem("chartbox_theme") || "dark";
-      setTheme(storedTheme);
-    }
-    function setTheme(theme) {
-      document.documentElement.setAttribute("data-theme", theme);
-      localStorage.setItem("chartbox_theme", theme);
-      if (sunIcon && moonIcon) {
-        if (theme === "light") {
-          sunIcon.style.display = "none";
-          moonIcon.style.display = "block";
-        } else {
-          sunIcon.style.display = "block";
-          moonIcon.style.display = "none";
-        }
-      } else {
-        // Fallback for custom simplified theme buttons
-        const iconEl = themeToggleBtn.querySelector("i");
-        if (iconEl) {
-          iconEl.setAttribute("data-lucide", theme === "light" ? "moon" : "sun");
-          if (window.lucide) window.lucide.createIcons();
-        }
-      }
-    }
-    themeToggleBtn.addEventListener("click", () => {
-      const currentTheme = document.documentElement.getAttribute("data-theme");
-      const newTheme = currentTheme === "light" ? "dark" : "light";
-      setTheme(newTheme);
-      showToast(`Switched to ${newTheme} mode!`, "info");
-    });
-    // --- Drag & Drop Operations ---
-    dropZone.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      dropZone.classList.add("dragover");
-    });
-    dropZone.addEventListener("dragleave", () => {
-      dropZone.classList.remove("dragover");
-    });
-    dropZone.addEventListener("drop", (e) => {
-      e.preventDefault();
-      dropZone.classList.remove("dragover");
-      if (e.dataTransfer.files.length) {
-        imageInput.files = e.dataTransfer.files;
-        handleFileSelection(e.dataTransfer.files[0]);
-      }
-    });
-    imageInput.addEventListener("change", (e) => {
-      if (e.target.files.length) {
-        handleFileSelection(e.target.files[0]);
-      }
-    });
-    function formatBytes(bytes, decimals = 2) {
-      if (!bytes) return '0 Bytes';
-      const k = 1024;
-      const dm = decimals < 0 ? 0 : decimals;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-    }
+
     function handleFileSelection(file) {
-      if (!file) return;
-      
-      // Safety limit of 15MB
       if (file.size > 15 * 1024 * 1024) {
         showToast("File size too large. Limit is 15MB.", "warning");
-        imageInput.value = "";
-        resetPreview();
+        clearSelectedFile(false);
         return;
       }
-      imagePreview.style.display = "flex";
-      previewName.textContent = file.name;
-      previewSize.textContent = formatBytes(file.size);
+
+      els.imagePreview.style.display = "flex";
+      els.previewName.textContent = file.name;
+      els.previewSize.textContent = formatBytes(file.size);
+
       if (file.type.startsWith("image/")) {
-        previewThumb.src = URL.createObjectURL(file);
-        previewThumb.style.display = "block";
-        previewIconBadge.style.display = "none";
+        els.previewThumb.src = URL.createObjectURL(file);
+        els.previewThumb.style.display = "block";
+        els.previewIconBadge.style.display = "none";
       } else {
-        previewThumb.style.display = "none";
-        previewIconBadge.style.display = "flex";
-        // Render appropriate file type icon class
-        let iconName = "file-text";
-        if (file.name.endsWith(".pdf")) iconName = "file-spreadsheet"; // Lucide icon names
-        if (file.name.match(/\.(doc|docx)$/i)) iconName = "file-text";
-        if (file.name.match(/\.(ppt|pptx)$/i)) iconName = "presentation";
-        
-        previewIconBadge.innerHTML = `<i data-lucide="${iconName}"></i>`;
-        lucide.createIcons();
+        els.previewThumb.style.display = "none";
+        els.previewIconBadge.style.display = "flex";
+        els.previewIconBadge.innerHTML = `<i data-lucide="${getFileIcon(file.name)}" width="24" height="24"></i>`;
+        refreshIcons();
       }
     }
-    // Clear file selection
-    clearImageButton.addEventListener("click", () => {
-      imageInput.value = "";
-      editingFileUrl = null; // Clear edit URL trace if user actively clears file
+
+    function clearSelectedFile(showMessage = true) {
+      els.imageInput.value = "";
+      state.editingFileUrl = null;
       resetPreview();
-      showToast("Attachment cleared.", "info");
-    });
+      if (showMessage) showToast("Attachment cleared.", "info");
+    }
+
     function resetPreview() {
-      imagePreview.style.display = "none";
-      previewName.textContent = "";
-      previewSize.textContent = "";
-      previewThumb.src = "";
-      previewThumb.style.display = "none";
-      previewIconBadge.style.display = "none";
+      if (els.previewThumb.src.startsWith("blob:")) URL.revokeObjectURL(els.previewThumb.src);
+      els.imagePreview.style.display = "none";
+      els.previewName.textContent = "";
+      els.previewSize.textContent = "";
+      els.previewThumb.removeAttribute("src");
+      els.previewThumb.style.display = "none";
+      els.previewIconBadge.style.display = "none";
     }
+
     function resetForm() {
-      noteInput.value = "";
-      imageInput.value = "";
-      editingNoteId = null;
-      editingFileUrl = null;
+      els.noteInput.value = "";
+      els.imageInput.value = "";
+      state.editingNoteId = null;
+      state.editingFileUrl = null;
       resetPreview();
-      
-      // Restore Editor default UI styling
-      editorCard.style.borderColor = "var(--card-border)";
-      editorTitleText.innerHTML = `<i data-lucide="pencil-line" width="18" height="18" style="color:var(--primary);"></i> Compose a New Note`;
-      saveBtnText.textContent = "Publish Note";
-      saveBtnIcon.setAttribute("data-lucide", "send");
-      lucide.createIcons();
+      els.editorCard.style.borderColor = "var(--card-border)";
+      els.editorTitleText.innerHTML = `<i data-lucide="pencil-line" width="18" height="18"></i> Compose a New Note`;
+      els.saveBtnText.textContent = "Publish Note";
+      els.saveBtnIcon.setAttribute("data-lucide", "send");
+      refreshIcons();
     }
-    // --- Search & Highlights & Layout ---
-    searchInput.addEventListener("input", () => {
-      renderNotesFeed();
-    });
-    starredFilterBtn.addEventListener("click", () => {
-      starredOnlyFilter = !starredOnlyFilter;
-      starredFilterBtn.classList.toggle("active", starredOnlyFilter);
-      renderNotesFeed();
-    });
-    layoutGridBtn.addEventListener("click", () => {
-      currentViewMode = "grid";
-      layoutGridBtn.classList.add("active");
-      layoutListBtn.classList.remove("active");
-      notesList.className = "notes-grid grid-view";
-    });
-    layoutListBtn.addEventListener("click", () => {
-      currentViewMode = "list";
-      layoutListBtn.classList.add("active");
-      layoutGridBtn.classList.remove("active");
-      notesList.className = "notes-grid list-view";
-    });
-    // --- Supabase CRUD Integration ---
-    // Save or Update note
+
     async function saveNote() {
-      const text = noteInput.value.trim();
-      const file = imageInput.files[0];
-      let fileUrl = editingFileUrl; // default back to previous file if in edit mode
+      if (!state.loggedInUser) {
+        showToast("Please login first.", "warning");
+        showLogin();
+        return;
+      }
+
+      const text = els.noteInput.value.trim();
+      const file = els.imageInput.files[0];
+      let fileUrl = state.editingFileUrl;
+
       if (!text && !file && !fileUrl) {
         showToast("Please write a note or attach a file first.", "warning");
         return;
       }
-      // Toggle action UI state
-      saveButton.disabled = true;
-      saveBtnText.textContent = editingNoteId ? "Updating..." : "Publishing...";
-      // Handle new file upload
-      if (file) {
-        // Sanitize name
-        const fileName = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9.\-]/g, '_');
-        const { error: uploadError } = await db.storage
-          .from("note-images")
-          .upload(fileName, file);
-        if (uploadError) {
-          showToast("Upload failed: " + uploadError.message, "error");
-          saveButton.disabled = false;
-          saveBtnText.textContent = editingNoteId ? "Update Note" : "Publish Note";
-          return;
-        }
-        const { data } = db.storage
-          .from("note-images")
-          .getPublicUrl(fileName);
-        fileUrl = data.publicUrl;
-      }
+
+      els.saveButton.disabled = true;
+      els.saveBtnText.textContent = state.editingNoteId ? "Updating..." : "Publishing...";
+
       try {
-        if (editingNoteId) {
-          // Update Mode
-          const { error } = await db
-            .from("notes")
-            .update({
-              content: text,
-              image_url: fileUrl
-            })
-            .eq("id", editingNoteId);
-          if (error) throw error;
-          showToast("Note updated successfully!");
-        } else {
-          // Insert Mode
-          const { error } = await db
-            .from("notes")
-            .insert([{
-              content: text,
-              image_url: fileUrl
-            }]);
-          if (error) throw error;
-          showToast("Note published successfully!");
+        if (file) {
+          const fileName = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9.\-]/g, "_");
+          const { error: uploadError } = await db.storage.from("note-images").upload(fileName, file);
+          if (uploadError) throw uploadError;
+
+          const { data } = db.storage.from("note-images").getPublicUrl(fileName);
+          fileUrl = data.publicUrl;
         }
+
+        if (state.editingNoteId) {
+          const { error } = await db
+            .from("notes")
+            .update({ content: text, image_url: fileUrl, username: state.loggedInUser })
+            .eq("id", state.editingNoteId);
+
+          if (error) throw error;
+          showToast("Note updated successfully.");
+        } else {
+          const { error } = await db
+            .from("notes")
+            .insert([{ content: text, image_url: fileUrl, username: state.loggedInUser }]);
+
+          if (error) throw error;
+          showToast("Note published successfully.");
+        }
+
         resetForm();
         await loadNotes();
-      } catch (err) {
-        showToast("Database error: " + err.message, "error");
-        console.error(err);
+      } catch (error) {
+        showToast("Save failed: " + error.message, "error");
+        console.error(error);
       } finally {
-        saveButton.disabled = false;
+        els.saveButton.disabled = false;
+        els.saveBtnText.textContent = state.editingNoteId ? "Update Note" : "Publish Note";
       }
     }
-    // Prepare note for editing
-    function startEditNote(id) {
-      const note = notesData.find(n => n.id === id);
-      if (!note) return;
-      editingNoteId = id;
-      noteInput.value = note.content || "";
-      editingFileUrl = note.image_url;
-      
-      resetPreview();
-      if (note.image_url) {
-        imagePreview.style.display = "flex";
-        // Extract filename from URL
-        const parts = note.image_url.split('/');
-        const fileName = decodeURIComponent(parts[parts.length - 1]);
-        previewName.textContent = fileName.substring(fileName.indexOf('-') + 1);
-        previewSize.textContent = "Existing Attachment";
-        if (note.image_url.match(/\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i)) {
-          previewThumb.src = note.image_url;
-          previewThumb.style.display = "block";
-          previewIconBadge.style.display = "none";
-        } else {
-          previewThumb.style.display = "none";
-          previewIconBadge.style.display = "flex";
-          let iconName = "file-text";
-          if (note.image_url.toLowerCase().includes(".pdf")) iconName = "file-spreadsheet";
-          previewIconBadge.innerHTML = `<i data-lucide="${iconName}"></i>`;
-        }
-      }
-      // Focus input and style editor border
-      noteInput.focus();
-      editorCard.style.borderColor = "var(--primary)";
-      editorTitleText.innerHTML = `<i data-lucide="edit" width="18" height="18" style="color:var(--accent);"></i> Mode: Editing Note`;
-      saveBtnText.textContent = "Update Note";
-      saveBtnIcon.setAttribute("data-lucide", "check");
-      
-      // Smooth scroll editor to top
-      editorCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      lucide.createIcons();
-    }
-    // Delete Note
-    async function deleteNote(id) {
-      if (!confirm("Are you sure you want to permanently discard this note?")) {
-        return;
-      }
-      try {
-        const { error } = await db
-          .from("notes")
-          .delete()
-          .eq("id", id);
-        if (error) throw error;
-        
-        // Remove pin/star details in local storage
-        localStorage.removeItem(`chartbox_pinned_${id}`);
-        localStorage.removeItem(`chartbox_starred_${id}`);
-        showToast("Note deleted successfully.", "info");
-        await loadNotes();
-      } catch (err) {
-        showToast("Could not delete note: " + err.message, "error");
-      }
-    }
-    // Local Storage Pins & Stars
-    function togglePin(id) {
-      const isPinned = localStorage.getItem(`chartbox_pinned_${id}`) === "true";
-      localStorage.setItem(`chartbox_pinned_${id}`, !isPinned);
-      showToast(!isPinned ? "Note pinned to top!" : "Note unpinned.", "info");
-      renderNotesFeed();
-    }
-    function toggleStar(id) {
-      const isStarred = localStorage.getItem(`chartbox_starred_${id}`) === "true";
-      localStorage.setItem(`chartbox_starred_${id}`, !isStarred);
-      showToast(!isStarred ? "Added to favorites!" : "Removed from favorites.", "info");
-      renderNotesFeed();
-    }
-    // Load notes from Supabase
+
     async function loadNotes() {
+      if (!state.loggedInUser) return;
+
       renderShimmerLoaders();
-      
+
       const { data, error } = await db
         .from("notes")
         .select("*")
         .order("created_at", { ascending: false });
+
       if (error) {
-        showToast("Error loading note feeds: " + error.message, "error");
-        console.error("Error loading notes:", error);
-        notesList.innerHTML = `
+        showToast("Error loading notes: " + error.message, "error");
+        els.notesList.innerHTML = `
           <div class="empty-state">
-            <i data-lucide="cloud-off"></i>
+            <i data-lucide="cloud-off" width="48" height="48"></i>
             <h3>Connection Error</h3>
-            <p>Could not reach the database. Please verify your connection or try again shortly.</p>
+            <p>Could not reach the database. Please verify your Supabase table permissions and network connection.</p>
           </div>
         `;
-        lucide.createIcons();
+        refreshIcons();
         return;
       }
-      notesData = data || [];
+
+      state.notes = data || [];
       renderNotesFeed();
     }
-    // Render loading placeholders
+
     function renderShimmerLoaders() {
-      notesList.innerHTML = Array(3).fill(0).map(() => `
+      els.notesList.innerHTML = Array.from({ length: 3 }, () => `
         <div class="shimmer-card">
-          <div class="shimmer-line header"></div>
-          <div class="shimmer-line body-1"></div>
-          <div class="shimmer-line body-2"></div>
-          <div class="shimmer-line body-3"></div>
-          <div class="shimmer-box"></div>
+          <p style="height: 18px; width: 45%; border-radius: 6px; background: rgba(255,255,255,0.08);"></p>
+          <p style="height: 14px; width: 90%; margin-top: 16px; border-radius: 6px; background: rgba(255,255,255,0.06);"></p>
+          <p style="height: 14px; width: 70%; margin-top: 10px; border-radius: 6px; background: rgba(255,255,255,0.06);"></p>
         </div>
-      `).join('');
+      `).join("");
     }
-    // Dynamic extraction of Hashtags for sorting/filtering
-    function extractHashtags(text) {
-      if (!text) return [];
-      const regex = /#([a-zA-Z0-9_\-]+)/g;
-      const matches = [];
-      let match;
-      while ((match = regex.exec(text)) !== null) {
-        matches.push(match[1].toLowerCase());
-      }
-      return [...new Set(matches)]; // Unique tags
-    }
-    // Build the tag cloud widget dynamically
-    function updateTagCloud() {
-      const allTags = {};
-      notesData.forEach(note => {
-        const tags = extractHashtags(note.content);
-        tags.forEach(tag => {
-          allTags[tag] = (allTags[tag] || 0) + 1;
-        });
-      });
-      const tagsArray = Object.keys(allTags).sort();
-      
-      if (tagsArray.length === 0) {
-        tagCloudContainer.style.display = "none";
-        return;
-      }
-      tagCloudContainer.style.display = "flex";
-      
-      // Preserve "Filter by tag" title, but rebuild the tag list
-      tagCloudContainer.innerHTML = `
-        <span class="tag-cloud-title">
-          <i data-lucide="tag" width="12" height="12"></i>
-          Filter by hashtag
-        </span>
-      `;
-      tagsArray.forEach(tag => {
-        const count = allTags[tag];
-        const isActive = currentFilterTag === tag;
-        const tagEl = document.createElement("button");
-        tagEl.className = `filter-tag ${isActive ? 'active' : ''}`;
-        tagEl.innerHTML = `#${tag} <span>(${count})</span>`;
-        tagEl.addEventListener("click", () => {
-          toggleTagFilter(tag);
-        });
-        tagCloudContainer.appendChild(tagEl);
-      });
-      lucide.createIcons();
-    }
-    function toggleTagFilter(tag) {
-      if (currentFilterTag === tag) {
-        currentFilterTag = null; // deselect
-      } else {
-        currentFilterTag = tag;
-      }
-      renderNotesFeed();
-    }
-    // Copy note text helper
-    function copyNoteText(id, text) {
-      navigator.clipboard.writeText(text).then(() => {
-        showToast("Note content copied to clipboard!");
-      }).catch(err => {
-        showToast("Copy failed", "error");
-      });
-    }
-    // --- Search Query Highlighter ---
-    function highlightSearch(text, query) {
-      if (!query || !text) return text;
-      
-      // Escape query special characters
-      const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-      const regex = new RegExp(`(${escapedQuery})`, 'gi');
-      return text.replace(regex, '<mark>$1</mark>');
-    }
-    // Highlight Hashtags dynamically in output text
-    function parseAndHighlightTags(htmlText) {
-      return htmlText.replace(/#([a-zA-Z0-9_\-]+)/g, '<span class="note-tag-highlight" onclick="toggleTagFilter(\'$1\')">#$1</span>');
-    }
-    // Main Renderer for the Notes feed
+
     function renderNotesFeed() {
-      const searchTerm = searchInput.value.toLowerCase().trim();
-      
-      // Compile full list of notes, enriching with pin & star states
-      let processedNotes = notesData.map(note => {
-        const isPinned = localStorage.getItem(`chartbox_pinned_${note.id}`) === "true";
-        const isStarred = localStorage.getItem(`chartbox_starred_${note.id}`) === "true";
-        const tags = extractHashtags(note.content);
-        return { ...note, isPinned, isStarred, tags };
-      });
-      // Filter by Search Query
+      const searchTerm = els.searchInput.value.toLowerCase().trim();
+
+      let notes = state.notes.map((note) => ({
+        ...note,
+        isPinned: localStorage.getItem("chartbox_pinned_" + note.id) === "true",
+        isStarred: localStorage.getItem("chartbox_starred_" + note.id) === "true",
+        tags: extractHashtags(note.content)
+      }));
+
       if (searchTerm) {
-        processedNotes = processedNotes.filter(note => {
+        notes = notes.filter((note) => {
           const contentMatch = (note.content || "").toLowerCase().includes(searchTerm);
-          const tagMatch = note.tags.some(t => t.includes(searchTerm));
-          return contentMatch || tagMatch;
+          const tagMatch = note.tags.some((tag) => tag.includes(searchTerm.replace("#", "")));
+          const userMatch = (note.username || "").toLowerCase().includes(searchTerm);
+          return contentMatch || tagMatch || userMatch;
         });
       }
-      // Filter by Starred Only toggler
-      if (starredOnlyFilter) {
-        processedNotes = processedNotes.filter(note => note.isStarred);
-      }
-      // Filter by Category Tag Cloud selection
-      if (currentFilterTag) {
-        processedNotes = processedNotes.filter(note => note.tags.includes(currentFilterTag));
-      }
-      // Sort order: Pinned first, then by date descending
-      processedNotes.sort((a, b) => {
+
+      if (state.starredOnly) notes = notes.filter((note) => note.isStarred);
+      if (state.currentFilterTag) notes = notes.filter((note) => note.tags.includes(state.currentFilterTag));
+
+      notes.sort((a, b) => {
         if (a.isPinned && !b.isPinned) return -1;
         if (!a.isPinned && b.isPinned) return 1;
-        // fallback to created_at
         return new Date(b.created_at || 0) - new Date(a.created_at || 0);
       });
-      // Update counters & tags cloud
-      updateStatsWidget(processedNotes);
+
+      updateStatsWidget();
       updateTagCloud();
-      // Render Empty state if no data match
-      if (processedNotes.length === 0) {
-        notesList.innerHTML = `
-          <div class="empty-state" style="grid-column: 1 / -1;">
-            <i data-lucide="notepad-text"></i>
-            <h3>No Notes Discovered</h3>
-            <p>${searchTerm || currentFilterTag || starredOnlyFilter ? 'No notes correspond to the selected filters and search query.' : 'Compose your very first note inside the panel above to begin.'}</p>
-            ${searchTerm || currentFilterTag || starredOnlyFilter ? '<button class="secondary" onclick="clearFilters()" style="margin-top: 10px;">Clear Filters</button>' : ''}
+
+      if (!notes.length) {
+        const hasFilters = searchTerm || state.currentFilterTag || state.starredOnly;
+        els.notesList.innerHTML = `
+          <div class="empty-state">
+            <i data-lucide="notepad-text" width="56" height="56"></i>
+            <h3>No Notes Found</h3>
+            <p>${hasFilters ? "No notes match the selected filters." : "Compose your first note above to begin."}</p>
+            ${hasFilters ? `<button type="button" class="secondary" onclick="clearFilters()">Clear Filters</button>` : ""}
           </div>
         `;
-        lucide.createIcons();
+        refreshIcons();
         return;
       }
-      notesList.innerHTML = "";
-      processedNotes.forEach(note => {
-        // Attachment HTML
-        let attachmentHtml = "";
-        if (note.image_url) {
-          const isImage = note.image_url.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i);
-          const parts = note.image_url.split('/');
-          const origName = decodeURIComponent(parts[parts.length - 1]);
-          const displayName = origName.substring(origName.indexOf('-') + 1);
-          if (isImage) {
-            attachmentHtml = `
-              <div class="note-attachment">
-                <div class="attachment-img-wrapper" onclick="openLightbox('${note.image_url}', '${escapeHTML(note.content || displayName)}')">
-                  <img src="${note.image_url}" alt="Attachment: ${displayName}" loading="lazy" />
-                  <div class="attachment-overlay">
-                    <i data-lucide="zoom-in"></i>
-                  </div>
-                </div>
-              </div>
-            `;
-          } else {
-            let fileIcon = "file-text";
-            let typeLabel = "Document Attachment";
-            if (note.image_url.toLowerCase().includes(".pdf")) {
-              fileIcon = "file-spreadsheet";
-              typeLabel = "Portable Document (PDF)";
-            } else if (note.image_url.match(/\.(doc|docx)$/i)) {
-              typeLabel = "Word Processing Doc";
-            } else if (note.image_url.match(/\.(ppt|pptx)$/i)) {
-              fileIcon = "presentation";
-              typeLabel = "Presentation Slide";
-            }
-            attachmentHtml = `
-              <div class="note-attachment">
-                <a href="${note.image_url}" target="_blank" class="doc-attachment-card" title="Open or download file">
-                  <div class="doc-icon">
-                    <i data-lucide="${fileIcon}"></i>
-                  </div>
-                  <div class="doc-info">
-                    <div class="doc-title">${displayName}</div>
-                    <div class="doc-subtitle">${typeLabel}</div>
-                  </div>
-                  <i data-lucide="external-link" width="16" height="16" style="color:var(--text-muted);"></i>
-                </a>
-              </div>
-            `;
-          }
-        }
-        // Render Markdown & highlights inside content
-        let parsedContent = note.content ? marked.parse(note.content) : "";
-        if (searchTerm) {
-          // Highlight search matches
-          parsedContent = highlightSearch(parsedContent, searchTerm);
-        }
-        parsedContent = parseAndHighlightTags(parsedContent);
-        // Format Date
-        let dateStr = "Draft Note";
-        if (note.created_at) {
-          const date = new Date(note.created_at);
-          dateStr = date.toLocaleDateString(undefined, { 
-            month: 'short', 
-            day: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit' 
-          });
-        }
-        const noteCard = document.createElement("div");
-        noteCard.className = `note ${note.isPinned ? 'pinned' : ''} ${note.isStarred ? 'starred' : ''}`;
-        noteCard.innerHTML = `
+
+      els.notesList.innerHTML = notes.map(renderNoteCard).join("");
+      refreshIcons();
+    }
+
+    function renderNoteCard(note) {
+      const dateStr = note.created_at
+        ? new Date(note.created_at).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+          })
+        : "Draft Note";
+
+      const parsedContent = parseNoteContent(note.content || "");
+      const attachmentHtml = renderAttachment(note);
+      const username = escapeHTML(note.username || "Unknown student");
+
+      return `
+        <article class="note ${note.isPinned ? "pinned" : ""} ${note.isStarred ? "starred" : ""}">
           <div class="note-header">
             <span class="note-date">
               <i data-lucide="clock" width="12" height="12"></i>
               ${dateStr}
             </span>
             <div class="note-actions-quick">
-              <button class="quick-action-btn ${note.isPinned ? 'active-pin' : ''}" onclick="togglePin(${note.id})" title="${note.isPinned ? 'Unpin Note' : 'Pin Note'}">
+              <button type="button" class="quick-action-btn ${note.isPinned ? "active-pin" : ""}" onclick="togglePin(${note.id})" title="${note.isPinned ? "Unpin note" : "Pin note"}">
                 <i data-lucide="pin" width="14" height="14"></i>
               </button>
-              <button class="quick-action-btn ${note.isStarred ? 'active-star' : ''}" onclick="toggleStar(${note.id})" title="${note.isStarred ? 'Remove Star' : 'Star Note'}">
+              <button type="button" class="quick-action-btn ${note.isStarred ? "active-star" : ""}" onclick="toggleStar(${note.id})" title="${note.isStarred ? "Remove star" : "Star note"}">
                 <i data-lucide="star" width="14" height="14"></i>
               </button>
             </div>
           </div>
-          
+          <div class="note-author">
+            <i data-lucide="user-round" width="13" height="13"></i>
+            Posted by ${username}
+          </div>
           <div class="note-content">${parsedContent}</div>
-          
           ${attachmentHtml}
-          
           <div class="note-footer">
             <div class="note-card-actions">
-              <button class="secondary" onclick="startEditNote(${note.id})">
+              <button type="button" class="secondary" onclick="startEditNote(${note.id})">
                 <i data-lucide="edit-3" width="12" height="12"></i>
                 <span>Edit</span>
               </button>
-              <button class="danger-outline" onclick="deleteNote(${note.id})">
+              <button type="button" class="danger-outline" onclick="deleteNote(${note.id})">
                 <i data-lucide="trash" width="12" height="12"></i>
                 <span>Discard</span>
               </button>
             </div>
-            <button class="quick-action-btn" onclick="copyNoteText(${note.id}, ${JSON.stringify(note.content || '')})" title="Copy raw text">
+            <button type="button" class="quick-action-btn" onclick="copyNoteText(${note.id})" title="Copy raw text">
               <i data-lucide="copy" width="13" height="13"></i>
             </button>
           </div>
+        </article>
+      `;
+    }
+
+    function renderAttachment(note) {
+      if (!note.image_url) return "";
+
+      const fileUrl = escapeAttribute(note.image_url);
+      const displayName = getDisplayFileName(note.image_url);
+      const escapedName = escapeHTML(displayName);
+      const isImage = /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(note.image_url);
+
+      if (isImage) {
+        return `
+          <div class="note-attachment">
+            <div class="attachment-img-wrapper" data-url="${fileUrl}" data-caption="${escapeAttribute(note.content || displayName)}" onclick="openLightboxFromButton(this)">
+              <img src="${fileUrl}" alt="Attachment: ${escapedName}" loading="lazy" />
+              <div class="attachment-overlay"><i data-lucide="zoom-in"></i></div>
+            </div>
+          </div>
         `;
-        
-        notesList.appendChild(noteCard);
+      }
+
+      const icon = getFileIcon(note.image_url);
+      const label = getFileLabel(note.image_url);
+
+      return `
+        <div class="note-attachment">
+          <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="doc-attachment-card">
+            <div class="doc-icon"><i data-lucide="${icon}"></i></div>
+            <div class="doc-info">
+              <div class="doc-title">${escapedName}</div>
+              <div class="doc-subtitle">${label}</div>
+            </div>
+            <i data-lucide="external-link" width="16" height="16"></i>
+          </a>
+        </div>
+      `;
+    }
+
+    function parseNoteContent(text) {
+      const escapedMarkdown = escapeHTML(text);
+      let html = marked.parse(escapedMarkdown);
+      const searchTerm = els.searchInput.value.trim();
+      if (searchTerm) html = highlightSearch(html, searchTerm);
+      return html.replace(/#([a-zA-Z0-9_-]+)/g, (match, tag) => {
+        const safeTag = escapeAttribute(tag.toLowerCase());
+        return `<button type="button" class="note-tag-highlight" onclick="toggleTagFilter('${safeTag}')">#${escapeHTML(tag)}</button>`;
       });
-      lucide.createIcons();
     }
-    function clearFilters() {
-      searchInput.value = "";
-      currentFilterTag = null;
-      starredOnlyFilter = false;
-      starredFilterBtn.classList.remove("active");
-      renderNotesFeed();
-      showToast("All dashboard filters cleared.", "info");
-    }
-    function updateStatsWidget(activeNotes) {
-      // General stats over all notesData, not just active filtered ones
-      const total = notesData.length;
-      const pinned = notesData.filter(note => localStorage.getItem(`chartbox_pinned_${note.id}`) === "true").length;
-      const starred = notesData.filter(note => localStorage.getItem(`chartbox_starred_${note.id}`) === "true").length;
-      const files = notesData.filter(note => note.image_url).length;
-      // Animate counting
-      animateCounter(statTotalNotes, total);
-      animateCounter(statPinnedNotes, pinned);
-      animateCounter(statStarredNotes, starred);
-      animateCounter(statTotalFiles, files);
-    }
-    function animateCounter(element, targetVal) {
-      const startVal = parseInt(element.textContent) || 0;
-      if (startVal === targetVal) return;
-      
-      const duration = 400; // ms
-      const startTime = performance.now();
-      function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        // easeOutQuad
-        const easeProgress = progress * (2 - progress);
-        const currentVal = Math.round(startVal + easeProgress * (targetVal - startVal));
-        element.textContent = currentVal;
-        if (progress < 1) {
-          requestAnimationFrame(update);
+
+    function startEditNote(id) {
+      const note = state.notes.find((item) => item.id === id);
+      if (!note) return;
+
+      state.editingNoteId = id;
+      state.editingFileUrl = note.image_url || null;
+      els.noteInput.value = note.content || "";
+
+      resetPreview();
+
+      if (note.image_url) {
+        els.imagePreview.style.display = "flex";
+        els.previewName.textContent = getDisplayFileName(note.image_url);
+        els.previewSize.textContent = "Existing attachment";
+
+        if (/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(note.image_url)) {
+          els.previewThumb.src = note.image_url;
+          els.previewThumb.style.display = "block";
+          els.previewIconBadge.style.display = "none";
         } else {
-          element.textContent = targetVal;
+          els.previewThumb.style.display = "none";
+          els.previewIconBadge.style.display = "flex";
+          els.previewIconBadge.innerHTML = `<i data-lucide="${getFileIcon(note.image_url)}" width="24" height="24"></i>`;
         }
       }
-      requestAnimationFrame(update);
+
+      els.editorCard.style.borderColor = "var(--primary)";
+      els.editorTitleText.innerHTML = `<i data-lucide="edit" width="18" height="18"></i> Editing Note`;
+      els.saveBtnText.textContent = "Update Note";
+      els.saveBtnIcon.setAttribute("data-lucide", "check");
+      els.noteInput.focus();
+      els.editorCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      refreshIcons();
     }
-    // --- HTML Sanitization Helper ---
-    function escapeHTML(str) {
-      if (!str) return '';
-      return str
+
+    async function deleteNote(id) {
+      if (!confirm("Are you sure you want to permanently delete this note?")) return;
+
+      try {
+        const { error } = await db.from("notes").delete().eq("id", id);
+        if (error) throw error;
+
+        localStorage.removeItem("chartbox_pinned_" + id);
+        localStorage.removeItem("chartbox_starred_" + id);
+        showToast("Note deleted successfully.", "info");
+        await loadNotes();
+      } catch (error) {
+        showToast("Could not delete note: " + error.message, "error");
+      }
+    }
+
+    function togglePin(id) {
+      const key = "chartbox_pinned_" + id;
+      const nextValue = localStorage.getItem(key) !== "true";
+      localStorage.setItem(key, String(nextValue));
+      showToast(nextValue ? "Note pinned to top." : "Note unpinned.", "info");
+      renderNotesFeed();
+    }
+
+    function toggleStar(id) {
+      const key = "chartbox_starred_" + id;
+      const nextValue = localStorage.getItem(key) !== "true";
+      localStorage.setItem(key, String(nextValue));
+      showToast(nextValue ? "Added to favorites." : "Removed from favorites.", "info");
+      renderNotesFeed();
+    }
+
+    function copyNoteText(id) {
+      const note = state.notes.find((item) => item.id === id);
+      if (!note) return;
+
+      navigator.clipboard.writeText(note.content || "")
+        .then(() => showToast("Note copied to clipboard."))
+        .catch(() => showToast("Copy failed.", "error"));
+    }
+
+    function updateStatsWidget() {
+      const total = state.notes.length;
+      const pinned = state.notes.filter((note) => localStorage.getItem("chartbox_pinned_" + note.id) === "true").length;
+      const starred = state.notes.filter((note) => localStorage.getItem("chartbox_starred_" + note.id) === "true").length;
+      const files = state.notes.filter((note) => note.image_url).length;
+
+      els.statTotalNotes.textContent = total;
+      els.statPinnedNotes.textContent = pinned;
+      els.statStarredNotes.textContent = starred;
+      els.statTotalFiles.textContent = files;
+    }
+
+    function updateTagCloud() {
+      const tagCounts = {};
+      state.notes.forEach((note) => {
+        extractHashtags(note.content).forEach((tag) => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
+      });
+
+      const tags = Object.keys(tagCounts).sort();
+      if (!tags.length) {
+        els.tagCloudContainer.style.display = "none";
+        els.tagCloudContainer.innerHTML = "";
+        return;
+      }
+
+      els.tagCloudContainer.style.display = "flex";
+      els.tagCloudContainer.innerHTML = `
+        <span class="tag-cloud-title">
+          <i data-lucide="tag" width="12" height="12"></i>
+          Filter by hashtag
+        </span>
+        ${tags.map((tag) => `
+          <button type="button" class="filter-tag ${state.currentFilterTag === tag ? "active" : ""}" onclick="toggleTagFilter('${escapeAttribute(tag)}')">
+            #${escapeHTML(tag)} <span>(${tagCounts[tag]})</span>
+          </button>
+        `).join("")}
+      `;
+
+      refreshIcons();
+    }
+
+    function toggleTagFilter(tag) {
+      state.currentFilterTag = state.currentFilterTag === tag ? null : tag;
+      renderNotesFeed();
+    }
+
+    function clearFilters() {
+      els.searchInput.value = "";
+      state.currentFilterTag = null;
+      state.starredOnly = false;
+      els.starredFilterBtn.classList.remove("active");
+      renderNotesFeed();
+      showToast("Filters cleared.", "info");
+    }
+
+    function setViewMode(mode) {
+      state.viewMode = mode;
+      els.layoutGridBtn.classList.toggle("active", mode === "grid");
+      els.layoutListBtn.classList.toggle("active", mode === "list");
+      els.notesList.className = "notes-grid " + (mode === "grid" ? "grid-view" : "list-view");
+    }
+
+    function openLightbox(url, caption) {
+      els.lightboxImg.src = url;
+      els.lightboxCaption.textContent = caption || "Media view";
+      els.lightbox.classList.add("show");
+    }
+
+    function openLightboxFromButton(button) {
+      openLightbox(button.dataset.url, button.dataset.caption);
+    }
+
+    function closeLightbox() {
+      els.lightbox.classList.remove("show");
+      els.lightboxImg.removeAttribute("src");
+    }
+
+    function extractHashtags(text = "") {
+      const tags = [];
+      const regex = /#([a-zA-Z0-9_-]+)/g;
+      let match;
+      while ((match = regex.exec(text)) !== null) tags.push(match[1].toLowerCase());
+      return [...new Set(tags)];
+    }
+
+    function highlightSearch(text, query) {
+      if (!query) return text;
+      const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return text.replace(new RegExp("(" + escapedQuery + ")", "gi"), "<mark>$1</mark>");
+    }
+
+    function formatBytes(bytes, decimals = 2) {
+      if (!bytes) return "0 Bytes";
+      const k = 1024;
+      const sizes = ["Bytes", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + " " + sizes[i];
+    }
+
+    function getDisplayFileName(url) {
+      const raw = decodeURIComponent(url.split("/").pop() || "Attachment");
+      const dashIndex = raw.indexOf("-");
+      return dashIndex >= 0 ? raw.slice(dashIndex + 1) : raw;
+    }
+
+    function getFileIcon(name = "") {
+      if (/\.pdf(\?.*)?$/i.test(name)) return "file-text";
+      if (/\.(ppt|pptx)(\?.*)?$/i.test(name)) return "presentation";
+      if (/\.(doc|docx)(\?.*)?$/i.test(name)) return "file-text";
+      return "file";
+    }
+
+    function getFileLabel(name = "") {
+      if (/\.pdf(\?.*)?$/i.test(name)) return "PDF document";
+      if (/\.(ppt|pptx)(\?.*)?$/i.test(name)) return "Presentation";
+      if (/\.(doc|docx)(\?.*)?$/i.test(name)) return "Word document";
+      if (/\.txt(\?.*)?$/i.test(name)) return "Text document";
+      return "Document attachment";
+    }
+
+    function escapeHTML(value) {
+      return String(value || "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
     }
-    // --- Lightbox Operations ---
-    function openLightbox(url, caption) {
-      const lightbox = document.getElementById("lightbox");
-      const lightboxImg = document.getElementById("lightboxImg");
-      const lightboxCaption = document.getElementById("lightboxCaption");
-      
-      lightboxImg.src = url;
-      lightboxCaption.textContent = caption ? caption.replace(/<[^>]*>/g, '') : "Media View";
-      
-      lightbox.classList.add("show");
+
+    function escapeAttribute(value) {
+      return escapeHTML(value).replace(/`/g, "&#096;");
     }
-    function closeLightbox() {
-      const lightbox = document.getElementById("lightbox");
-      lightbox.classList.remove("show");
+
+    function refreshIcons() {
+      if (window.lucide) lucide.createIcons();
     }
-    // Handle Escape key inside lightbox
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        closeLightbox();
-      }
-    });
-    // --- Global Init ---
-    initTheme();
-    loadNotes();
+
+    window.startEditNote = startEditNote;
+    window.deleteNote = deleteNote;
+    window.togglePin = togglePin;
+    window.toggleStar = toggleStar;
+    window.copyNoteText = copyNoteText;
+    window.toggleTagFilter = toggleTagFilter;
+    window.clearFilters = clearFilters;
+    window.openLightbox = openLightbox;
+    window.openLightboxFromButton = openLightboxFromButton;
+
+    init();
   </script>
 </body>
 </html>
