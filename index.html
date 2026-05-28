@@ -1118,6 +1118,9 @@
     </div>
   </div>
 
+
+
+  
   <script>
     const SUPABASE_URL = "https://kuengnoohosovnnibqlb.supabase.co";
     const SUPABASE_KEY = "sb_publishable_y4XzOOhE84fof3YZK4qz-w_KSCMXLlz";
@@ -1135,11 +1138,18 @@
     };
 
 
-    let editingNoteId = null;
+  let editingNoteId = null;
 let allNotes = [];
 
-const ADMIN_USERNAME = "Harsha";
-const CURRENT_USER = "Harsha";
+const ADMIN_USERS = [
+  "Harsha",
+  "harshavardhan",
+  "harsha",
+  "Harshavardhan",
+  "apoorva",
+  "Apoorva"
+];
+    
     const els = {
       appPage: document.getElementById("appPage"),
       loginOverlay: document.getElementById("loginOverlay"),
@@ -1256,23 +1266,45 @@ const CURRENT_USER = "Harsha";
     }
 
     function studentLogin(event) {
-      event.preventDefault();
-      const username = els.loginUsername.value.trim();
-      const password = els.loginPassword.value.trim();
+  event.preventDefault();
 
-      els.loginError.textContent = "";
+  const username = document
+    .getElementById("loginUsername")
+    .value
+    .trim();
 
-      if (!username || !password) {
-        els.loginError.textContent = "Please enter both username and password.";
-        return;
-      }
+  const password = document
+    .getElementById("loginPassword")
+    .value
+    .trim();
 
-      state.loggedInUser = username;
-      localStorage.setItem("chartbox_username", username);
-      els.loginPassword.value = "";
-      showApp();
-      showToast("Welcome " + username, "success");
-    }
+  if (!username || !password) {
+    document.getElementById("loginError").textContent =
+      "Enter username and password";
+    return;
+  }
+
+  state.loggedInUser = username;
+
+  localStorage.setItem(
+    "chartbox_username",
+    username
+  );
+
+  document.getElementById(
+    "loggedInUserLabel"
+  ).textContent = username;
+
+  document.getElementById(
+    "loginOverlay"
+  ).style.display = "none";
+
+  document.getElementById(
+    "appPage"
+  ).style.display = "block";
+
+  loadNotes();
+}
 
     function showLogin() {
       els.loginOverlay.style.display = "flex";
@@ -1574,26 +1606,33 @@ const CURRENT_USER = "Harsha";
           </div>
           <div class="note-content">${parsedContent}</div>
           ${attachmentHtml}
+
+
           <div class="note-footer">
-            <div class="note-card-actions">
-              <button type="button" class="secondary" onclick="startEditNote(${note.id})">
-                <i data-lucide="edit-3" width="12" height="12"></i>
-                <span>Edit</span>
-              ${
-  state.loggedInUser === ADMIN_USERNAME
-    ? `
-      <button type="button" class="danger-outline" onclick="deleteNote(${note.id})">
-        <i data-lucide="trash" width="12" height="12"></i>
-        <span>Delete</span>
-      </button>
-    `
-    : ""
-}
-            </div>
-            <button type="button" class="quick-action-btn" onclick="copyNoteText(${note.id})" title="Copy raw text">
-              <i data-lucide="copy" width="13" height="13"></i>
-            </button>
-          </div>
+  <div class="note-card-actions">
+
+    <button type="button" class="secondary" onclick="startEditNote(${note.id})">
+      <i data-lucide="edit-3" width="12" height="12"></i>
+      <span>Edit</span>
+    </button>
+
+    ${
+      ADMIN_USERS.includes(state.loggedInUser)
+        ? `
+          <button type="button" class="danger-outline" onclick="deleteNote(${note.id})">
+            <i data-lucide="trash" width="12" height="12"></i>
+            <span>Delete</span>
+          </button>
+        `
+        : ""
+    }
+
+  </div>
+
+  <button type="button" class="quick-action-btn" onclick="copyNoteText(${note.id})">
+    <i data-lucide="copy" width="13" height="13"></i>
+  </button>
+</div>
         </article>
       `;
     }
@@ -1682,7 +1721,7 @@ const CURRENT_USER = "Harsha";
     }
 
     async function deleteNote(id) {
-  if (state.loggedInUser !== ADMIN_USERNAME) {
+  if (!ADMIN_USERS.includes(state.loggedInUser)) {
     showToast("Only admin can delete notes.", "warning");
     return;
   }
