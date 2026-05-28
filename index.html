@@ -1134,6 +1134,12 @@
       loggedInUser: localStorage.getItem("chartbox_username") || ""
     };
 
+
+    let editingNoteId = null;
+let allNotes = [];
+
+const ADMIN_USERNAME = "Harsha";
+const CURRENT_USER = "Harsha";
     const els = {
       appPage: document.getElementById("appPage"),
       loginOverlay: document.getElementById("loginOverlay"),
@@ -1532,6 +1538,7 @@
     }
 
     function renderNoteCard(note) {
+      
       const dateStr = note.created_at
         ? new Date(note.created_at).toLocaleDateString(undefined, {
             month: "short",
@@ -1572,11 +1579,16 @@
               <button type="button" class="secondary" onclick="startEditNote(${note.id})">
                 <i data-lucide="edit-3" width="12" height="12"></i>
                 <span>Edit</span>
-              </button>
-              <button type="button" class="danger-outline" onclick="deleteNote(${note.id})">
-                <i data-lucide="trash" width="12" height="12"></i>
-                <span>Discard</span>
-              </button>
+              ${
+  state.loggedInUser === ADMIN_USERNAME
+    ? `
+      <button type="button" class="danger-outline" onclick="deleteNote(${note.id})">
+        <i data-lucide="trash" width="12" height="12"></i>
+        <span>Delete</span>
+      </button>
+    `
+    : ""
+}
             </div>
             <button type="button" class="quick-action-btn" onclick="copyNoteText(${note.id})" title="Copy raw text">
               <i data-lucide="copy" width="13" height="13"></i>
@@ -1588,6 +1600,7 @@
 
     function renderAttachment(note) {
       if (!note.image_url) return "";
+      const ADMIN_USERNAME = "Harsha"; // change to your username
 
       const fileUrl = escapeAttribute(note.image_url);
       const displayName = getDisplayFileName(note.image_url);
@@ -1669,20 +1682,31 @@
     }
 
     async function deleteNote(id) {
-      if (!confirm("Are you sure you want to permanently delete this note?")) return;
+  if (state.loggedInUser !== ADMIN_USERNAME) {
+    showToast("Only admin can delete notes.", "warning");
+    return;
+  }
 
-      try {
-        const { error } = await db.from("notes").delete().eq("id", id);
-        if (error) throw error;
+  if (!confirm("Are you sure you want to permanently delete this note?")) return;
 
-        localStorage.removeItem("chartbox_pinned_" + id);
-        localStorage.removeItem("chartbox_starred_" + id);
-        showToast("Note deleted successfully.", "info");
-        await loadNotes();
-      } catch (error) {
-        showToast("Could not delete note: " + error.message, "error");
-      }
-    }
+  try {
+    const { error } = await db
+      .from("notes")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw error;
+
+    localStorage.removeItem("chartbox_pinned_" + id);
+    localStorage.removeItem("chartbox_starred_" + id);
+
+    showToast("Note deleted successfully.", "success");
+
+    await loadNotes();
+  } catch (error) {
+    showToast("Could not delete note: " + error.message, "error");
+  }
+}
 
     function togglePin(id) {
       const key = "chartbox_pinned_" + id;
