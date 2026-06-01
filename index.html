@@ -982,9 +982,17 @@
     <form class="login-box" id="loginForm">
       <h2>Student Login</h2>
       <p class="login-error" id="loginError"></p>
-      <input type="text" id="loginUsername" placeholder="Username" autocomplete="username" />
-      <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" />
-      <button type="submit">Login</button>
+      <input
+  type="text"
+  id="loginUsername"
+  placeholder="Enter SRN"
+/>
+
+<input
+  type="password"
+  id="loginPassword"
+  placeholder="Enter PESU Password"
+/>
     </form>
   </div>
 
@@ -1265,10 +1273,10 @@ const ADMIN_USERS = [
       });
     }
 
-    function studentLogin(event) {
+   async function studentLogin(event) {
   event.preventDefault();
 
-  const username = document
+  const srn = document
     .getElementById("loginUsername")
     .value
     .trim();
@@ -1278,32 +1286,66 @@ const ADMIN_USERS = [
     .value
     .trim();
 
-  if (!username || !password) {
-    document.getElementById("loginError").textContent =
-      "Enter username and password";
+  const errorEl = document.getElementById("loginError");
+  errorEl.textContent = "";
+
+  if (!srn || !password) {
+    errorEl.textContent = "Enter SRN and password";
     return;
   }
 
-  state.loggedInUser = username;
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        srn,
+        password
+      })
+    });
 
-  localStorage.setItem(
-    "chartbox_username",
-    username
-  );
+    const data = await response.json();
 
-  document.getElementById(
-    "loggedInUserLabel"
-  ).textContent = username;
+    if (!response.ok) {
+      errorEl.textContent =
+        data.error || "Login failed";
+      return;
+    }
 
-  document.getElementById(
-    "loginOverlay"
-  ).style.display = "none";
+    state.loggedInUser = data.name || srn;
 
-  document.getElementById(
-    "appPage"
-  ).style.display = "block";
+    localStorage.setItem(
+      "chartbox_username",
+      data.name || srn
+    );
 
-  loadNotes();
+    document.getElementById(
+      "loggedInUserLabel"
+    ).textContent = data.name || srn;
+
+    document.getElementById(
+      "loginOverlay"
+    ).style.display = "none";
+
+    document.getElementById(
+      "appPage"
+    ).style.display = "block";
+
+    showToast(
+      `Welcome ${data.name}`,
+      "success"
+    );
+
+    loadNotes();
+
+  } catch (err) {
+    console.error(err);
+    errorEl.textContent =
+      "Server error. Try again.";
+  }
 }
 
     function showLogin() {
