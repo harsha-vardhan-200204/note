@@ -1265,10 +1265,10 @@ const ADMIN_USERS = [
       });
     }
 
-   async function studentLogin(event) {
+    function studentLogin(event) {
   event.preventDefault();
 
-  const srn = document
+  const username = document
     .getElementById("loginUsername")
     .value
     .trim();
@@ -1278,66 +1278,32 @@ const ADMIN_USERS = [
     .value
     .trim();
 
-  const errorEl = document.getElementById("loginError");
-  errorEl.textContent = "";
-
-  if (!srn || !password) {
-    errorEl.textContent = "Enter SRN and password";
+  if (!username || !password) {
+    document.getElementById("loginError").textContent =
+      "Enter username and password";
     return;
   }
 
-  try {
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        srn,
-        password
-      })
-    });
+  state.loggedInUser = username;
 
-    const data = await response.json();
+  localStorage.setItem(
+    "chartbox_username",
+    username
+  );
 
-    if (!response.ok) {
-      errorEl.textContent =
-        data.error || "Login failed";
-      return;
-    }
+  document.getElementById(
+    "loggedInUserLabel"
+  ).textContent = username;
 
-    state.loggedInUser = data.name || srn;
+  document.getElementById(
+    "loginOverlay"
+  ).style.display = "none";
 
-    localStorage.setItem(
-      "chartbox_username",
-      data.name || srn
-    );
+  document.getElementById(
+    "appPage"
+  ).style.display = "block";
 
-    document.getElementById(
-      "loggedInUserLabel"
-    ).textContent = data.name || srn;
-
-    document.getElementById(
-      "loginOverlay"
-    ).style.display = "none";
-
-    document.getElementById(
-      "appPage"
-    ).style.display = "block";
-
-    showToast(
-      `Welcome ${data.name}`,
-      "success"
-    );
-
-    loadNotes();
-
-  } catch (err) {
-    console.error(err);
-    errorEl.textContent =
-      "Server error. Try again.";
-  }
+  loadNotes();
 }
 
     function showLogin() {
