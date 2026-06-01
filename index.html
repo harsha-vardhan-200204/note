@@ -981,23 +981,10 @@
   <div class="login-overlay" id="loginOverlay">
     <form class="login-box" id="loginForm">
       <h2>Student Login</h2>
-  <input
-  type="text"
-  id="loginUsername"
-  placeholder="Enter SRN"
-  autocomplete="username"
-/>
-
-<input
-  type="password"
-  id="loginPassword"
-  placeholder="Enter PESU Password"
-  autocomplete="current-password"
-/>
-
-<button type="submit" id="loginSubmitBtn">
-  Login
-</button>
+      <p class="login-error" id="loginError"></p>
+      <input type="text" id="loginUsername" placeholder="Username" autocomplete="username" />
+      <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" />
+      <button type="submit">Login</button>
     </form>
   </div>
 
@@ -1278,25 +1265,29 @@ const ADMIN_USERS = [
       });
     }
 
-  async function studentLogin(event) {
+   async function studentLogin(event) {
   event.preventDefault();
 
-  const srn = els.loginUsername.value.trim();
-  const password = els.loginPassword.value.trim();
+  const srn = document
+    .getElementById("loginUsername")
+    .value
+    .trim();
 
-  els.loginError.textContent = "";
+  const password = document
+    .getElementById("loginPassword")
+    .value
+    .trim();
+
+  const errorEl = document.getElementById("loginError");
+  errorEl.textContent = "";
 
   if (!srn || !password) {
-    els.loginError.textContent = "Enter SRN and password";
+    errorEl.textContent = "Enter SRN and password";
     return;
   }
 
-  const btn = document.getElementById("loginSubmitBtn");
-  btn.disabled = true;
-  btn.innerText = "Logging in...";
-
   try {
-    const res = await fetch("/api/auth/login", {
+    const response = await fetch("/api/auth/login", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -1308,10 +1299,10 @@ const ADMIN_USERS = [
       })
     });
 
-    const data = await res.json();
+    const data = await response.json();
 
-    if (!res.ok) {
-      els.loginError.textContent =
+    if (!response.ok) {
+      errorEl.textContent =
         data.error || "Login failed";
       return;
     }
@@ -1323,27 +1314,32 @@ const ADMIN_USERS = [
       data.name || srn
     );
 
-    els.loggedInUserLabel.textContent =
-      data.name || srn;
+    document.getElementById(
+      "loggedInUserLabel"
+    ).textContent = data.name || srn;
 
-    showApp();
+    document.getElementById(
+      "loginOverlay"
+    ).style.display = "none";
+
+    document.getElementById(
+      "appPage"
+    ).style.display = "block";
 
     showToast(
-      `Welcome ${data.name || srn}`,
+      `Welcome ${data.name}`,
       "success"
     );
 
+    loadNotes();
+
   } catch (err) {
     console.error(err);
-    els.loginError.textContent =
-      "Server error. Please try again.";
-  } finally {
-    btn.disabled = false;
-    btn.innerText = "Login";
+    errorEl.textContent =
+      "Server error. Try again.";
   }
 }
 
-    
     function showLogin() {
       els.loginOverlay.style.display = "flex";
       els.appPage.style.display = "none";
